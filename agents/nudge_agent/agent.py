@@ -54,7 +54,7 @@ generate_nudges_agent = Agent[
 
 @generate_nudges_agent.tool
 async def get_overall_course_performance(
-    ctx: RunContext,
+    ctx: RunContext[Deps],
     course_ids: List[str],
 ) -> Dict[str, int]:
     """
@@ -69,7 +69,7 @@ async def get_overall_course_performance(
 
 @generate_nudges_agent.tool
 async def get_assignments(
-    ctx: RunContext,
+    ctx: RunContext[Deps],
     course_ids: List[str],
 ) -> Dict[str, List[Dict[str, str]]]:
     """
@@ -95,7 +95,8 @@ async def get_assignments(
 
 @generate_nudges_agent.tool
 async def get_chat_history_summary(
-    ctx: RunContext
+    ctx: RunContext[Deps],
+    course_id: str,
 ) -> str:
     """
     Get chat history for the list of course IDs.
@@ -108,7 +109,7 @@ async def get_chat_history_summary(
 
 @generate_nudges_agent.tool
 async def get_course_recent_announcements(
-    ctx: RunContext,
+    ctx: RunContext[Deps],
     course_ids: List[str],
 ) -> Dict[str, List[Dict[str, str]]]:
     """
@@ -134,7 +135,7 @@ async def get_course_recent_announcements(
     
 @generate_nudges_agent.tool
 async def get_course_quiz_history(
-    ctx: RunContext,
+    ctx: RunContext[Deps],
     course_ids: List[str],
 ) -> Dict[str, List[Dict[str, str]]]:
     """
@@ -159,7 +160,7 @@ async def get_course_quiz_history(
 
 @generate_nudges_agent.tool
 async def get_course_grade_details(
-    ctx: RunContext,
+    ctx: RunContext[Deps],
     course_ids: List[str],
 ) -> Dict[str, List[Dict[str, str]]]:
     """
