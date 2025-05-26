@@ -46,7 +46,7 @@ Generated nudges:
 4. "You've been asking a lot about algorithms. Want to go over flashcards for it?" → "Review flashcards for algorithms"
 5. "Your performance in MATH202 is slipping. Let's revisit some recent lecture notes." → "Review MATH202 lecture notes"
 
-For the label in th output, use one of the following labels:
+For the label in the output, use one of the following labels:
 - "Retake quiz"
 - "Block out study time"
 - "View announcement"
