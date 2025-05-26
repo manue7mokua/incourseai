@@ -33,7 +33,8 @@ class Nudge(BaseModel):
         """
         return {
             "nudge": self.nudge,
-            "action": self.action
+            "action": self.action,
+            "label": self.label
         }
         
 @dataclass
