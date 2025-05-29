@@ -26,9 +26,11 @@ import {
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(0); // -1 for back, 1 for forward
   const totalSteps = 3;
 
   const nextStep = () => {
+    setDirection(1);
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
@@ -38,9 +40,46 @@ export default function OnboardingPage() {
   };
 
   const prevStep = () => {
+    setDirection(-1);
     if (step > 1) {
       setStep(step - 1);
     }
+  };
+
+  // Animation variants for step transitions
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+  };
+
+  // Animation variants for step content
+  const contentVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -107,256 +146,308 @@ export default function OnboardingPage() {
           </div>
         </motion.div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Card className="w-full shadow-lg border-none">
-              {step === 1 && (
-                <>
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-bold">
-                      Connect your learning platform
-                    </CardTitle>
-                    <CardDescription>
-                      InCourse integrates with your LMS to access your course
-                      materials
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <Tabs defaultValue="oauth" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="oauth">OAuth</TabsTrigger>
-                        <TabsTrigger value="api">API Token</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="oauth" className="space-y-4">
-                        <div className="flex items-center justify-center p-6 border rounded-lg bg-gray-50">
-                          <Button className="w-full max-w-sm">
-                            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                              <path
-                                d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z"
-                                fill="#F25022"
-                              />
-                            </svg>
-                            Connect with Canvas
-                          </Button>
-                        </div>
-                      </TabsContent>
-                      <TabsContent value="api" className="space-y-4">
-                        <div className="grid gap-4">
-                          <div className="grid gap-2">
-                            <Label htmlFor="canvas-url">Canvas URL</Label>
-                            <Input
-                              id="canvas-url"
-                              placeholder="https://canvas.university.edu"
-                            />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label htmlFor="api-token">API Token</Label>
-                            <Input id="api-token" type="password" />
-                            <p className="text-sm text-muted-foreground">
-                              You can find your API token in Canvas under
-                              Account &gt; Settings &gt; Approved Integrations
-                            </p>
-                          </div>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-
-                    <div className="flex items-start space-x-2 p-4 bg-gray-50 rounded-lg">
-                      <Lock className="h-5 w-5 text-gray-400 mt-0.5" />
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">
-                          Privacy & Security
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          We only access the course materials you explicitly
-                          share. Your data is encrypted and never shared with
-                          third parties.
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </>
-              )}
-
-              {step === 2 && (
-                <>
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-bold">
-                      Select your courses
-                    </CardTitle>
-                    <CardDescription>
-                      Choose which courses you want to use with InCourse
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {[
-                        {
-                          id: "course1",
-                          name: "CS 101: Introduction to Computer Science",
-                          instructor: "Dr. Smith",
-                          term: "Fall 2023",
-                        },
-                        {
-                          id: "course2",
-                          name: "ECON 201: Macroeconomics",
-                          instructor: "Prof. Johnson",
-                          term: "Fall 2023",
-                        },
-                        {
-                          id: "course3",
-                          name: "PSYCH 110: Introduction to Psychology",
-                          instructor: "Dr. Williams",
-                          term: "Fall 2023",
-                        },
-                        {
-                          id: "course4",
-                          name: "MATH 220: Calculus I",
-                          instructor: "Prof. Garcia",
-                          term: "Fall 2023",
-                        },
-                      ].map((course) => (
-                        <motion.div
-                          key={course.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          whileHover={{ scale: 1.02 }}
-                          className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-gray-50 transition-colors"
-                        >
-                          <Checkbox
-                            id={course.id}
-                            defaultChecked={course.id !== "course4"}
-                          />
-                          <div className="grid gap-1.5">
-                            <Label htmlFor={course.id} className="font-medium">
-                              {course.name}
-                            </Label>
-                            <p className="text-sm text-muted-foreground">
-                              {course.instructor} • {course.term}
-                            </p>
-                          </div>
+        <div className="relative">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              className="w-full"
+            >
+              <Card className="w-full shadow-lg border-none">
+                <AnimatePresence mode="wait">
+                  {step === 1 && (
+                    <motion.div
+                      key="step1"
+                      variants={contentVariants}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      <CardHeader>
+                        <motion.div variants={itemVariants}>
+                          <CardTitle className="text-2xl font-bold">
+                            Connect your learning platform
+                          </CardTitle>
+                          <CardDescription>
+                            InCourse integrates with your LMS to access your
+                            course materials
+                          </CardDescription>
                         </motion.div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </>
-              )}
-
-              {step === 3 && (
-                <>
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-bold">
-                      Learning preferences
-                    </CardTitle>
-                    <CardDescription>
-                      Customize how you want to learn with InCourse
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-3">
-                      <Label>Preferred learning mode</Label>
-                      <RadioGroup defaultValue="balanced">
-                        {[
-                          {
-                            id: "quiz",
-                            title: "Quiz-focused",
-                            description:
-                              "Emphasize quizzes and active recall for better retention",
-                          },
-                          {
-                            id: "flashcard",
-                            title: "Flashcard-focused",
-                            description:
-                              "Focus on spaced repetition with flashcards",
-                          },
-                          {
-                            id: "balanced",
-                            title: "Balanced",
-                            description:
-                              "Mix of summaries, quizzes, and flashcards",
-                          },
-                        ].map((mode) => (
-                          <motion.div
-                            key={mode.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ scale: 1.02 }}
-                            className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-gray-50 transition-colors"
-                          >
-                            <RadioGroupItem value={mode.id} id={mode.id} />
-                            <div className="grid gap-1.5">
-                              <Label htmlFor={mode.id} className="font-medium">
-                                {mode.title}
-                              </Label>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <motion.div variants={itemVariants}>
+                          <Tabs defaultValue="oauth" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                              <TabsTrigger value="oauth">OAuth</TabsTrigger>
+                              <TabsTrigger value="api">API Token</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="oauth" className="space-y-4">
+                              <div className="flex items-center justify-center p-6 border rounded-lg bg-gray-50">
+                                <Button className="w-full max-w-sm">
+                                  <svg
+                                    className="mr-2 h-4 w-4"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z"
+                                      fill="#F25022"
+                                    />
+                                  </svg>
+                                  Connect with Canvas
+                                </Button>
+                              </div>
+                            </TabsContent>
+                            <TabsContent value="api" className="space-y-4">
+                              <div className="grid gap-4">
+                                <div className="grid gap-2">
+                                  <Label htmlFor="canvas-url">Canvas URL</Label>
+                                  <Input
+                                    id="canvas-url"
+                                    placeholder="https://canvas.university.edu"
+                                  />
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="api-token">API Token</Label>
+                                  <Input id="api-token" type="password" />
+                                  <p className="text-sm text-muted-foreground">
+                                    You can find your API token in Canvas under
+                                    Account &gt; Settings &gt; Approved
+                                    Integrations
+                                  </p>
+                                </div>
+                              </div>
+                            </TabsContent>
+                          </Tabs>
+                        </motion.div>
+                        <motion.div variants={itemVariants}>
+                          <div className="flex items-start space-x-2 p-4 bg-gray-50 rounded-lg">
+                            <Lock className="h-5 w-5 text-gray-400 mt-0.5" />
+                            <div className="space-y-1">
+                              <p className="text-sm font-medium">
+                                Privacy & Security
+                              </p>
                               <p className="text-sm text-muted-foreground">
-                                {mode.description}
+                                We only access the course materials you
+                                explicitly share. Your data is encrypted and
+                                never shared with third parties.
                               </p>
                             </div>
-                          </motion.div>
-                        ))}
-                      </RadioGroup>
-                    </div>
+                          </div>
+                        </motion.div>
+                      </CardContent>
+                    </motion.div>
+                  )}
 
-                    <div className="space-y-3">
-                      <Label>Notification preferences</Label>
-                      <div className="space-y-2">
-                        {[
-                          {
-                            id: "nudge-review",
-                            label: "Nudge me to review material",
-                          },
-                          {
-                            id: "nudge-quiz",
-                            label: "Remind me to take quizzes",
-                          },
-                          {
-                            id: "sync-calendar",
-                            label: "Sync with my calendar",
-                          },
-                        ].map((pref) => (
-                          <motion.div
-                            key={pref.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox id={pref.id} defaultChecked />
-                            <Label htmlFor={pref.id}>{pref.label}</Label>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </>
-              )}
+                  {step === 2 && (
+                    <motion.div
+                      key="step2"
+                      variants={contentVariants}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      <CardHeader>
+                        <motion.div variants={itemVariants}>
+                          <CardTitle className="text-2xl font-bold">
+                            Select your courses
+                          </CardTitle>
+                          <CardDescription>
+                            Choose which courses you want to use with InCourse
+                          </CardDescription>
+                        </motion.div>
+                      </CardHeader>
+                      <CardContent>
+                        <motion.div
+                          variants={itemVariants}
+                          className="space-y-4"
+                        >
+                          {[
+                            {
+                              id: "course1",
+                              name: "CS 101: Introduction to Computer Science",
+                              instructor: "Dr. Smith",
+                              term: "Fall 2023",
+                            },
+                            {
+                              id: "course2",
+                              name: "ECON 201: Macroeconomics",
+                              instructor: "Prof. Johnson",
+                              term: "Fall 2023",
+                            },
+                            {
+                              id: "course3",
+                              name: "PSYCH 110: Introduction to Psychology",
+                              instructor: "Dr. Williams",
+                              term: "Fall 2023",
+                            },
+                            {
+                              id: "course4",
+                              name: "MATH 220: Calculus I",
+                              instructor: "Prof. Garcia",
+                              term: "Fall 2023",
+                            },
+                          ].map((course) => (
+                            <motion.div
+                              key={course.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              whileHover={{ scale: 1.02 }}
+                              className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-gray-50 transition-colors"
+                            >
+                              <Checkbox
+                                id={course.id}
+                                defaultChecked={course.id !== "course4"}
+                              />
+                              <div className="grid gap-1.5">
+                                <Label
+                                  htmlFor={course.id}
+                                  className="font-medium"
+                                >
+                                  {course.name}
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                  {course.instructor} • {course.term}
+                                </p>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </motion.div>
+                      </CardContent>
+                    </motion.div>
+                  )}
 
-              <CardFooter className="flex justify-between">
-                <Button
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={step === 1}
-                  className="hover:bg-gray-100"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back
-                </Button>
-                <Button
-                  onClick={nextStep}
-                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
-                >
-                  {step === totalSteps ? "Finish" : "Continue"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardFooter>
-            </Card>
-          </motion.div>
-        </AnimatePresence>
+                  {step === 3 && (
+                    <motion.div
+                      key="step3"
+                      variants={contentVariants}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      <CardHeader>
+                        <motion.div variants={itemVariants}>
+                          <CardTitle className="text-2xl font-bold">
+                            Learning preferences
+                          </CardTitle>
+                          <CardDescription>
+                            Customize how you want to learn with InCourse
+                          </CardDescription>
+                        </motion.div>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <motion.div
+                          variants={itemVariants}
+                          className="space-y-3"
+                        >
+                          <Label>Preferred learning mode</Label>
+                          <RadioGroup defaultValue="balanced">
+                            {[
+                              {
+                                id: "quiz",
+                                title: "Quiz-focused",
+                                description:
+                                  "Emphasize quizzes and active recall for better retention",
+                              },
+                              {
+                                id: "flashcard",
+                                title: "Flashcard-focused",
+                                description:
+                                  "Focus on spaced repetition with flashcards",
+                              },
+                              {
+                                id: "balanced",
+                                title: "Balanced",
+                                description:
+                                  "Mix of summaries, quizzes, and flashcards",
+                              },
+                            ].map((mode) => (
+                              <motion.div
+                                key={mode.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                whileHover={{ scale: 1.02 }}
+                                className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-gray-50 transition-colors"
+                              >
+                                <RadioGroupItem value={mode.id} id={mode.id} />
+                                <div className="grid gap-1.5">
+                                  <Label
+                                    htmlFor={mode.id}
+                                    className="font-medium"
+                                  >
+                                    {mode.title}
+                                  </Label>
+                                  <p className="text-sm text-muted-foreground">
+                                    {mode.description}
+                                  </p>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </RadioGroup>
+                        </motion.div>
+                        <motion.div
+                          variants={itemVariants}
+                          className="space-y-3"
+                        >
+                          <Label>Notification preferences</Label>
+                          <div className="space-y-2">
+                            {[
+                              {
+                                id: "nudge-review",
+                                label: "Nudge me to review material",
+                              },
+                              {
+                                id: "nudge-quiz",
+                                label: "Remind me to take quizzes",
+                              },
+                              {
+                                id: "sync-calendar",
+                                label: "Sync with my calendar",
+                              },
+                            ].map((pref) => (
+                              <motion.div
+                                key={pref.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-center space-x-2"
+                              >
+                                <Checkbox id={pref.id} defaultChecked />
+                                <Label htmlFor={pref.id}>{pref.label}</Label>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      </CardContent>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <CardFooter className="flex justify-between">
+                  <Button
+                    variant="outline"
+                    onClick={prevStep}
+                    disabled={step === 1}
+                    className="hover:bg-gray-100"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                  </Button>
+                  <Button
+                    onClick={nextStep}
+                    className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
+                  >
+                    {step === totalSteps ? "Finish" : "Continue"}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
