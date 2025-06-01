@@ -1,4 +1,4 @@
-import { Header } from "@/components/layout/header";
+import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -25,9 +25,9 @@ const courses = [
 
 export default function CoursesPage() {
   return (
-    <div className="min-h-screen">
-      <Header />
-      <main className="container py-6">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-pink-50">
+      <Navbar />
+      <main className="container mx-auto py-6 px-4 md:px-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">My Courses</h1>
           <Button>Add New Course</Button>
@@ -35,7 +35,7 @@ export default function CoursesPage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
-            <Card key={course.id}>
+            <Card key={course.id} className="shadow-md border-border/50">
               <CardHeader>
                 <CardTitle>{course.title}</CardTitle>
               </CardHeader>

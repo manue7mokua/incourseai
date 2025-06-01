@@ -88,14 +88,14 @@ export default function DashboardPage() {
       course: "CS 101",
       message: "Time to review Arrays and Linked Lists",
       dueDate: "Quiz in 2 days",
-      priority: "high",
+      priority: "high" as const,
     },
     {
       id: 2,
       course: "ECON 201",
       message: "New lecture summary available",
       dueDate: "Posted yesterday",
-      priority: "medium",
+      priority: "medium" as const,
     },
   ];
 
