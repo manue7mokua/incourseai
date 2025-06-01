@@ -1,36 +1,213 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 🚀 Tech Stack
 
-## Getting Started
+- **Framework**: [Next.js 15](https://nextjs.org) with App Router
+- **Language**: TypeScript
+- **Styling**: [Tailwind CSS](https://tailwindcss.com)
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com)
+- **Icons**: [Lucide React](https://lucide.dev)
+- **Animations**: [Framer Motion](https://www.framer.com/motion)
+- **Package Manager**: npm
 
-First, run the development server:
+## 🏁 Getting Started
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Prerequisites
+
+- Node.js 18.x or later
+- npm (comes with Node.js)
+
+### Installation
+
+1. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+2. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+3. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+
+## 📁 Project Structure
+
+```
+frontend/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── dashboard/          # Dashboard page
+│   │   ├── courses/            # Courses listing page
+│   │   ├── calendar/           # Calendar view page
+│   │   ├── sign-in/            # Authentication pages
+│   │   ├── sign-up/
+│   │   ├── onboarding/         # Multi-step onboarding
+│   │   └── profile/
+│   ├── components/             # Reusable UI components
+│   │   ├── ui/                 # shadcn/ui components
+│   │   ├── navbar.tsx          # Navigation component
+│   │   ├── course-card.tsx     # Course display card
+│   │   ├── nudge-card.tsx      # Smart nudge component
+│   │   └── calendar-*.tsx      # Calendar components
+│   └── lib/                    # Utility functions
+├── public/                     # Static assets
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ✅ Authentication & Onboarding
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Sign-in/Sign-up pages** 
+- **Social authentication**
+- **Multi-step onboarding** 
+- **Animated dashboard previews** 
 
-## Learn More
+### ✅ Dashboard
 
-To learn more about Next.js, take a look at the following resources:
+- **Recent Activity** 
+- **Smart Nudges** 
+- **Clean, Airbnb-inspired design** 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### ✅ Course Management
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Course listing page** 
+- **Course cards**
+- **Responsive grid layout** 
 
-## Deploy on Vercel
+### ✅ Calendar Integration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Multi-view calendar** 
+- **Course-color-coded events**
+- **Sidebar filters** 
+- **Event management** 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 🛠️ Available Scripts
+
+```bash
+# Development
+npm run dev          # Start development server
+
+# Building
+npm run build        # Create production build
+npm run start        # Start production server
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run type-check   # Run TypeScript compiler
+```
+
+## 🎨 Design Philosophy
+
+The InCourse frontend follows these design principles:
+
+- **Clean & Modern**: Airbnb-inspired design with clean lines and whitespace
+- **User-Centric**: Intuitive navigation and clear information hierarchy
+- **Performance Focused**: Optimized loading and smooth animations
+
+## 🔧 Development Guidelines
+
+### Component Structure
+
+- Use functional components with TypeScript
+- Implement proper prop interfaces
+- Follow shadcn/ui component patterns
+- Use Tailwind CSS for styling
+
+### State Management
+
+- Use React hooks for local state
+- Keep components simple and focused
+- Implement proper error boundaries
+
+### Animation Guidelines
+
+- Use Framer Motion for page transitions
+- Implement staggered animations for lists
+- Keep animations smooth and purposeful (60fps)
+
+## 📱 Responsive Breakpoints
+
+```css
+sm: 640px   /* Small tablets */
+md: 768px   /* Tablets */
+lg: 1024px  /* Small laptops */
+xl: 1280px  /* Desktops */
+2xl: 1536px /* Large screens */
+```
+
+## 🚀 Deployment
+
+### Production Build
+
+```bash
+npm run build
+npm run start
+```
+
+### Vercel Deployment (Recommended)
+
+1. Connect your GitHub repository to Vercel
+2. Set build command: `npm run build`
+3. Set output directory: `.next`
+4. Deploy automatically on push to main
+
+### Environment Variables
+
+Create a `.env.local` file for local development:
+
+```
+NEXT_PUBLIC_API_URL=your_api_url
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+## 🤝 Contributing
+
+1. Create a feature branch: `git checkout -b feat/your-feature`
+2. Make your changes and commit: `git commit -m "Add your feature"`
+3. Push to the branch: `git push origin feat/your-feature`
+4. Create a Pull Request
+
+## 📋 Current Pages
+
+- **/** - Landing page
+- **/sign-in** - Authentication with dashboard preview
+- **/sign-up** - Registration with onboarding flow
+- **/onboarding** - Multi-step setup process
+- **/dashboard** - Main learning dashboard
+- **/courses** - Course listing and management
+- **/calendar** - Learning calendar with events
+- **/profile** - User profile settings
+
+## 🐛 Troubleshooting
+
+**Port already in use:**
+
+```bash
+lsof -ti:3000 | xargs kill
+npm run dev
+```
+
+**Build errors:**
+
+```bash
+rm -rf .next node_modules
+npm install
+npm run build
+```
+
+**TypeScript errors:**
+
+```bash
+npm run type-check
+```
+
+## 📄 License
+
+This project is part of the InCourse learning platform. All rights reserved.
+
+---
+
+Built with ❤️ using Next.js and TypeScript
