@@ -18,11 +18,11 @@ import {
   Calendar,
   ChevronDown,
   Home,
+  Library,
   LogOut,
   Menu,
   Search,
   Settings,
-  Sparkles,
   User,
 } from "lucide-react";
 
@@ -46,7 +46,7 @@ export function Navbar() {
             <span className="sr-only">Toggle menu</span>
           </Button>
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
+            <Library className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold hidden md:inline-block">
               InCourse
             </span>
@@ -67,7 +67,7 @@ export function Navbar() {
               size="sm"
               asChild
             >
-              <Link href="/dashboard">
+              <Link href="/courses">
                 <BookOpen className="h-4 w-4 mr-2" />
                 Courses
               </Link>
@@ -146,7 +146,7 @@ export function Navbar() {
               className="justify-start"
               asChild
             >
-              <Link href="/dashboard">
+              <Link href="/courses">
                 <BookOpen className="h-4 w-4 mr-2" />
                 Courses
               </Link>

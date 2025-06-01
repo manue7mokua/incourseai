@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Brain, Clock, Heart, Sparkles } from "lucide-react";
+import { BookOpen, Clock, FileText, Layers, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,228 +16,232 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
+  const router = useRouter();
+
+  const handleSignIn = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would normally handle the sign-in logic
+    // For now, we'll just redirect to dashboard
+    router.push("/dashboard");
+  };
+
+  const handleMagicLink = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would normally send the magic link
+    // For now, we'll just redirect to dashboard
+    router.push("/dashboard");
+  };
+
+  const handleSocialSignIn = () => {
+    // Here you would normally handle social authentication
+    // For now, we'll just redirect to dashboard
+    router.push("/dashboard");
+  };
+
+  // Static sample data for dashboard preview
+  const sampleActivity = [
+    {
+      id: 1,
+      course: "CS 101",
+      activity: "Completed quiz on Data Structures",
+      time: "2 hours ago",
+      score: "85%",
+      type: "quiz",
+    },
+    {
+      id: 2,
+      course: "ECON 201",
+      activity: "Read summary of Lecture 5",
+      time: "Yesterday",
+      type: "summary",
+    },
+    {
+      id: 3,
+      course: "PSYCH 110",
+      activity: "Practiced flashcards",
+      time: "2 days ago",
+      retention: "High",
+      type: "flashcards",
+    },
+  ];
+
+  const sampleNudges = [
+    {
+      id: 1,
+      course: "CS 101",
+      message: "Time to review Arrays and Linked Lists",
+      dueDate: "Quiz in 2 days",
+      priority: "high",
+    },
+    {
+      id: 2,
+      course: "ECON 201",
+      message: "New lecture summary available",
+      dueDate: "Posted yesterday",
+      priority: "medium",
+    },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left Column - Product Dashboard Visual */}
+      {/* Left Column - Simplified Dashboard Preview */}
       <div className="flex-1 bg-gradient-to-br from-orange-50 to-pink-50 p-8 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative"
+          className="w-full max-w-2xl"
         >
-          <div className="relative max-w-lg mx-auto">
-            {/* Browser Window Frame */}
-            <motion.div
-              className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Browser Header */}
-              <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center space-x-2">
-                <div className="flex space-x-2">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                </div>
-                <div className="flex-1 bg-white rounded-md px-3 py-1 text-xs text-gray-500 ml-4 font-medium">
-                  incourseai.com/actions
-                </div>
+          {/* Dashboard Preview Container */}
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+            {/* Browser Header */}
+            <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center space-x-2">
+              <div className="flex space-x-2">
+                <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
               </div>
+              <div className="flex-1 bg-white rounded-md px-3 py-1 text-xs text-gray-500 ml-4 font-medium">
+                incourseai.com/dashboard
+              </div>
+            </div>
 
-              {/* Dashboard Content */}
-              <div className="p-6 space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      Good morning, Jeff!
-                    </h3>
-                    <p className="text-sm text-gray-600 font-normal">
-                      You have 5 assignments due this week
-                    </p>
-                  </div>
-                  <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-semibold">S</span>
-                  </div>
-                </div>
+            {/* Dashboard Content */}
+            <div className="p-6">
+              {/* Header */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                className="mb-6"
+              >
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Good morning, Iman!
+                </h3>
+                <p className="text-gray-600">
+                  Here&apos;s what&apos;s happening with your learning today
+                </p>
+              </motion.div>
 
-                {/* Courses */}
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">
-                    Your Courses
-                  </h4>
-
-                  {/* Biology 101 */}
-                  <motion.div
-                    className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100 hover:shadow-md transition-all duration-200"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.5 }}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h5 className="font-medium text-gray-800">
-                          Biology 101
-                        </h5>
-                        <p className="text-xs text-gray-600 font-normal">
-                          2 assignments due
-                        </p>
-                      </div>
-                      <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-xs">🧬</span>
-                      </div>
-                    </div>
-                    <div className="mt-2 flex space-x-2">
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-green-100 text-green-700 rounded-md font-medium"
-                      >
-                        Lab Report
-                      </Badge>
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-green-100 text-green-700 rounded-md font-medium"
-                      >
-                        Quiz Ch. 5
-                      </Badge>
-                    </div>
-                  </motion.div>
-
-                  {/* Calculus II */}
-                  <motion.div
-                    className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 hover:shadow-md transition-all duration-200"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.0, duration: 0.5 }}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h5 className="font-medium text-gray-800">
-                          Calculus II
-                        </h5>
-                        <p className="text-xs text-gray-600 font-normal">
-                          1 assignment due
-                        </p>
-                      </div>
-                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-xs">∫</span>
-                      </div>
-                    </div>
-                    <div className="mt-2">
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-blue-100 text-blue-700 rounded-md font-medium"
-                      >
-                        Problem Set 7
-                      </Badge>
-                    </div>
-                  </motion.div>
-
-                  {/* World History */}
-                  <motion.div
-                    className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 hover:shadow-md transition-all duration-200"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.2, duration: 0.5 }}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h5 className="font-medium text-gray-800">
-                          World History
-                        </h5>
-                        <p className="text-xs text-gray-600 font-normal">
-                          2 assignments due
-                        </p>
-                      </div>
-                      <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-xs">🏛️</span>
-                      </div>
-                    </div>
-                    <div className="mt-2 flex space-x-2">
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-purple-100 text-purple-700 rounded-md font-medium"
-                      >
-                        Essay Draft
-                      </Badge>
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-purple-100 text-purple-700 rounded-md font-medium"
-                      >
-                        Reading Quiz
-                      </Badge>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* Zen Mode Block */}
+              {/* Dashboard Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Recent Activity */}
                 <motion.div
-                  className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-xl p-4 border border-orange-100"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4, duration: 0.5 }}
-                  whileHover={{ scale: 1.02 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  className="bg-white border border-gray-100 rounded-xl p-4"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-pink-500 rounded-xl flex items-center justify-center">
-                      <Heart className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h5 className="font-medium text-gray-800">
-                        Zen Mode Session
-                      </h5>
-                      <div className="flex items-center space-x-2 text-xs text-gray-600">
-                        <Clock className="w-3 h-3" />
-                        <span className="font-normal">Today at 3:00 PM</span>
-                        <span>•</span>
-                        <span className="font-normal">90 minutes</span>
-                      </div>
-                    </div>
-                    <Badge className="bg-orange-100 text-orange-700 rounded-md text-xs font-medium">
-                      Scheduled
-                    </Badge>
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-semibold">Recent Activity</h4>
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-3">
+                    {sampleActivity.map((activity, index) => (
+                      <motion.div
+                        key={activity.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1 + index * 0.1, duration: 0.3 }}
+                        className="flex items-start gap-3"
+                      >
+                        <div
+                          className={`rounded-full p-1.5 ${
+                            activity.type === "quiz"
+                              ? "bg-blue-100 text-blue-600"
+                              : activity.type === "summary"
+                              ? "bg-green-100 text-green-600"
+                              : "bg-purple-100 text-purple-600"
+                          }`}
+                        >
+                          {activity.type === "quiz" ? (
+                            <Layers className="h-3 w-3" />
+                          ) : activity.type === "summary" ? (
+                            <FileText className="h-3 w-3" />
+                          ) : (
+                            <BookOpen className="h-3 w-3" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {activity.activity}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {activity.course} • {activity.time}
+                          </p>
+                          {activity.score && (
+                            <Badge variant="outline" className="text-xs mt-1">
+                              {activity.score}
+                            </Badge>
+                          )}
+                          {activity.retention && (
+                            <Badge
+                              variant="outline"
+                              className="text-xs mt-1 bg-green-50 text-green-700 border-green-200"
+                            >
+                              {activity.retention} Retention
+                            </Badge>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Smart Nudges */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.0, duration: 0.5 }}
+                  className="bg-white border border-gray-100 rounded-xl p-4"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-semibold">Smart Nudges</h4>
+                    <Bell className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-3">
+                    {sampleNudges.map((nudge, index) => (
+                      <motion.div
+                        key={nudge.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1.2 + index * 0.1, duration: 0.3 }}
+                        className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-100 rounded-lg p-3"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900">
+                              {nudge.message}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-1">
+                              {nudge.course}
+                            </p>
+                          </div>
+                          <Badge
+                            className={`text-xs ${
+                              nudge.priority === "high"
+                                ? "bg-red-100 text-red-700 border-red-200"
+                                : "bg-orange-100 text-orange-700 border-orange-200"
+                            }`}
+                          >
+                            {nudge.dueDate}
+                          </Badge>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="w-full text-xs h-7 bg-primary hover:bg-primary/90"
+                        >
+                          Take Action
+                        </Button>
+                      </motion.div>
+                    ))}
                   </div>
                 </motion.div>
               </div>
-            </motion.div>
-
-            {/* Floating Elements */}
-            <motion.div
-              className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-yellow-200 to-orange-300 rounded-2xl flex items-center justify-center shadow-lg"
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, 0],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "easeInOut",
-              }}
-            >
-              <Sparkles className="w-8 h-8 text-white" />
-            </motion.div>
-
-            <motion.div
-              className="absolute -bottom-6 -left-6 w-12 h-12 bg-gradient-to-br from-purple-200 to-pink-300 rounded-xl flex items-center justify-center shadow-lg"
-              animate={{
-                y: [0, 10, 0],
-                rotate: [0, -5, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "easeInOut",
-                delay: 1,
-              }}
-            >
-              <Brain className="w-6 h-6 text-white" />
-            </motion.div>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -254,7 +258,7 @@ export default function SignInPage() {
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
               <CardDescription>
-                Sign in to your account to continue your learning journey
+                Sign in to your InCourse account to continue learning
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -264,10 +268,10 @@ export default function SignInPage() {
                   <TabsTrigger value="magic">Magic Link</TabsTrigger>
                 </TabsList>
                 <TabsContent value="email">
-                  <form>
+                  <form onSubmit={handleSignIn}>
                     <div className="grid gap-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">School Email</Label>
                         <Input
                           id="email"
                           type="email"
@@ -276,8 +280,21 @@ export default function SignInPage() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" type="password" required />
+                        <div className="flex items-center">
+                          <Label htmlFor="password">Password</Label>
+                          <Link
+                            href="/forgot-password"
+                            className="ml-auto inline-block text-sm underline"
+                          >
+                            Forgot your password?
+                          </Link>
+                        </div>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Enter your password"
+                          required
+                        />
                       </div>
                       <Button type="submit" className="w-full">
                         Sign In
@@ -286,10 +303,10 @@ export default function SignInPage() {
                   </form>
                 </TabsContent>
                 <TabsContent value="magic">
-                  <form>
+                  <form onSubmit={handleMagicLink}>
                     <div className="grid gap-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="magic-email">Email</Label>
+                        <Label htmlFor="magic-email">School Email</Label>
                         <Input
                           id="magic-email"
                           type="email"
@@ -317,7 +334,12 @@ export default function SignInPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => handleSocialSignIn()}
+                  type="button"
+                >
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -338,7 +360,12 @@ export default function SignInPage() {
                   </svg>
                   Google
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => handleSocialSignIn()}
+                  type="button"
+                >
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
                       d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z"

@@ -23,7 +23,7 @@ export function CalendarWeek({
   startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
 
   // Generate days for the week
-  const days = [];
+  const days: Date[] = [];
   for (let i = 0; i < 7; i++) {
     const day = new Date(startOfWeek);
     day.setDate(startOfWeek.getDate() + i);
@@ -31,7 +31,7 @@ export function CalendarWeek({
   }
 
   // Hours to display (7 AM to 9 PM)
-  const hours = [];
+  const hours: number[] = [];
   for (let i = 7; i <= 21; i++) {
     hours.push(i);
   }
