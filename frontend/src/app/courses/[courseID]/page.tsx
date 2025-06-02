@@ -26,9 +26,9 @@ import { ReadingTile } from "@/components/reading-tile";
 export default async function CoursePage({
   params,
 }: {
-  params: { id: string };
+  params: { courseID: string };
 }) {
-  const courseID = await params.id;
+  const courseID = await params.courseID;
 
   // Sample course data - in a real app, fetch this based on params.id
   const course = {
@@ -213,7 +213,7 @@ By the end of this course, you will have developed a comprehensive understanding
                           hasNotes: true,
                         },
                       ].map((reading) => (
-                        <ReadingTile reading={reading} key={reading.id}/>
+                        <ReadingTile reading={reading} courseID={courseID} key={reading.id}/>
                       ))}
                     </div>
                   </CardContent>

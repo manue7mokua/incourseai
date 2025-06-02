@@ -2,6 +2,7 @@ import { BookOpen, FileText, Layers } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ReadingProps {
   reading: {
@@ -14,9 +15,10 @@ interface ReadingProps {
     hasQuiz: boolean;
     hasNotes: boolean;
   };
+  courseID: string
 }
 
-export function ReadingTile({ reading }: ReadingProps) {
+export function ReadingTile({ reading, courseID }: ReadingProps) {
   return (
     <div
       className="flex flex-row gap-2 justify-between p-4 rounded-lg border hover:bg-accent transition-colors"
@@ -61,9 +63,11 @@ export function ReadingTile({ reading }: ReadingProps) {
       </div>
       <div className="flex items-center gap-2 justify-end">
         <p className="text-sm text-muted-foreground mr-2">{reading.lastRead}</p>
-        <Button size="sm">
-          {reading.lastRead === "Completed" ? "Review" : "Continue Reading"}
-        </Button>
+        <Link href={`/courses/${courseID}/files/${1}`}>
+          <Button size="sm">
+            {reading.lastRead === "Completed" ? "Review" : "Continue Reading"}
+          </Button>
+        </Link>
       </div>
     </div>
   );
