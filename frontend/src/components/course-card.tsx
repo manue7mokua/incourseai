@@ -18,7 +18,7 @@ interface CourseCardProps {
 
 export function CourseCard({ course }: CourseCardProps) {
   return (
-    <Link href={`/course/${course.id}`}>
+    <Link href={`/courses/${course.id}`}>
       <Card className="h-full overflow-hidden card-hover">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
