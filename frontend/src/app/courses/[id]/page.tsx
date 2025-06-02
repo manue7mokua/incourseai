@@ -15,14 +15,13 @@ import {
   ChevronLeft,
   Clock,
   Download,
-  FileText,
-  Layers,
   Play,
   Plus,
   ThumbsUp,
 } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { SummaryViewer } from "@/components/summary-viewer";
+import { ReadingTile } from "@/components/reading-tile";
 
 export default async function CoursePage({
   params,
@@ -128,7 +127,7 @@ export default async function CoursePage({
 
         {/* Course Content */}
         <div className="grid grid-cols-1 gap-6">
-          <Tabs defaultValue="summaries" className="w-full">
+          <Tabs defaultValue="notes" className="w-full">
             <TabsList className="mb-6">
               <TabsTrigger value="notes">Notes</TabsTrigger>
               <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
@@ -214,58 +213,7 @@ By the end of this course, you will have developed a comprehensive understanding
                           hasNotes: true,
                         },
                       ].map((reading) => (
-                        <div className="flex flex-row gap-2 justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
-                          <div className="flex flex-col gap-5">
-                            <div
-                              key={reading.id}
-                              className="flex items-center "
-                            >
-                              <div className="flex items-center gap-4">
-                                <div className="rounded-full p-2 bg-blue-100 text-blue-600">
-                                  <FileText className="h-5 w-5" />
-                                </div>
-                                <div>
-                                  <p className="font-medium">{reading.title}</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {reading.type} • {reading.pages} pages
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            <CardContent className="pb-2">
-                              <div className="flex gap-2">
-                                {reading.hasSummary && (
-                                  <Badge variant="secondary">
-                                    <FileText className="mr-1 h-3 w-3" />
-                                    Summary
-                                  </Badge>
-                                )}
-                                {reading.hasQuiz && (
-                                  <Badge variant="secondary">
-                                    <Layers className="mr-1 h-3 w-3" />
-                                    Quiz
-                                  </Badge>
-                                )}
-                                {reading.hasNotes && (
-                                  <Badge variant="secondary">
-                                    <BookOpen className="mr-1 h-3 w-3" />
-                                    Notes
-                                  </Badge>
-                                )}
-                              </div>
-                            </CardContent>
-                          </div>
-                          <div className="flex items-center gap-2 justify-end">
-                            <p className="text-sm text-muted-foreground mr-2">
-                              {reading.lastRead}
-                            </p>
-                            <Button size="sm">
-                              {reading.lastRead === "Completed"
-                                ? "Review"
-                                : "Continue Reading"}
-                            </Button>
-                          </div>
-                        </div>
+                        <ReadingTile reading={reading} key={reading.id}/>
                       ))}
                     </div>
                   </CardContent>
