@@ -1,170 +1,184 @@
 "use client"
 
-import { useState } from "react"
+import type React from "react"
+
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Lightbulb, MessageSquare, Send, Sparkles, X } from "lucide-react"
+import { MessageSquare, Lightbulb, Send, X } from "lucide-react"
+import type { ContextItem } from "./pdf-viewer"
 
-interface AIChatPanelProps {
-  isOpen: boolean
-  onClose: () => void
-  courseId: string
+interface ChatPanelProps {
+  activeTab: "chat" | "suggestions"
+  setActiveTab: (tab: "chat" | "suggestions") => void
+  contextItems: ContextItem[]
+  selectedContextItem: ContextItem | null
+  onRemoveContextItem: (id: string) => void
 }
 
-export function AIChatPanel({ isOpen, onClose, courseId }: AIChatPanelProps) {
-  const [messages, setMessages] = useState<
-    Array<{
-      id: string
-      role: "user" | "assistant"
-      content: string
-      timestamp: Date
-    }>
-  >([
+export function ChatPanel({
+  activeTab,
+  setActiveTab,
+  contextItems,
+  selectedContextItem,
+  onRemoveContextItem,
+}: ChatPanelProps) {
+  const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string; timestamp: Date }[]>([
     {
-      id: "1",
       role: "assistant",
-      content: "Hi there! I'm your AI learning assistant. How can I help you with this course?",
+      content: "Hi there! I'm your AI learning assistant. How can I help you with this document?",
       timestamp: new Date(),
     },
   ])
   const [inputValue, setInputValue] = useState("")
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const handleSendMessage = () => {
+  const suggestions = [
+    "Summarize this document for me",
+    "What are the key points in this document?",
+    "Explain the concepts in simpler terms",
+    "What are the main arguments presented?",
+    "Find contradictions in this text",
+    "How does this relate to [topic]?",
+    "Generate questions about this content",
+    "Compare this with standard practices",
+  ]
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault()
     if (!inputValue.trim()) return
 
     // Add user message
-    const userMessage = {
-      id: Date.now().toString(),
-      role: "user" as const,
-      content: inputValue,
-      timestamp: new Date(),
-    }
+    const newMessages = [
+      ...messages,
+      {
+        role: "user" as const,
+        content: inputValue,
+        timestamp: new Date(),
+      },
+    ]
 
-    setMessages((prev) => [...prev, userMessage])
+    setMessages(newMessages)
     setInputValue("")
 
     // Simulate AI response
     setTimeout(() => {
-      const aiResponse = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant" as const,
-        content: `I'll help you understand that concept from ${courseId.toUpperCase()}. Let me explain it in a simple way...`,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, aiResponse])
+      setMessages([
+        ...newMessages,
+        {
+          role: "assistant",
+          content: `I'll help you with "${inputValue}". This is a simulated response.`,
+          timestamp: new Date(),
+        },
+      ])
     }, 1000)
   }
 
-  if (!isOpen) return null
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion)
+    setActiveTab("chat")
+  }
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
 
   return (
-    <div className="fixed top-0 right-0 w-[400px] h-full bg-background border-l shadow-lg flex flex-col z-40">
-      <div className="p-4 border-b flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">AI Learning Assistant</h3>
-        </div>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <Tabs defaultValue="chat" className="flex-1 flex flex-col">
-        <TabsList className="mx-4 mt-2 mb-0">
-          <TabsTrigger value="chat" className="flex-1">
-            <MessageSquare className="h-4 w-4 mr-2" />
+    <div className="w-[30vw] bg-white border border-gray-200 flex flex-col m-10 rounded-xl overflow-hidden shadow-sm">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as "chat" | "suggestions")}
+        className="flex-1 flex flex-col"
+      >
+        <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-none border-b">
+          <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-white">
+            <MessageSquare className="h-4 w-4" />
             Chat
           </TabsTrigger>
-          <TabsTrigger value="suggestions" className="flex-1">
-            <Lightbulb className="h-4 w-4 mr-2" />
+          <TabsTrigger value="suggestions" className="flex items-center gap-2 data-[state=active]:bg-white">
+            <Lightbulb className="h-4 w-4" />
             Suggestions
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="chat" className="flex-1 flex flex-col p-0 m-0">
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {messages.map((message, index) => (
+              <div key={index} className={`mb-4 ${message.role === "assistant" ? "pr-8" : "pl-8"}`}>
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
-                    message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
+                  className={`p-3 rounded-lg ${
+                    message.role === "assistant"
+                      ? "bg-gray-100 rounded-tr-none"
+                      : "bg-blue-500 text-white rounded-tl-none ml-auto"
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
-                  <p className="text-xs opacity-70 mt-1">
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                  {message.content}
+                </div>
+                <div className={`text-xs text-gray-500 mt-1 ${message.role === "assistant" ? "" : "text-right"}`}>
+                  {formatTime(message.timestamp)}
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 border-t">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                handleSendMessage()
-              }}
-              className="flex gap-2"
-            >
+          {/* Context item display */}
+          {selectedContextItem && (
+            <div className="px-4 pt-2">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 pr-8 relative">
+                <div className="text-xs text-blue-600 font-medium mb-1">From page {selectedContextItem.pageNumber}</div>
+                <p className="text-sm text-gray-700 line-clamp-2">{selectedContextItem.text}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 absolute top-1 right-1"
+                  onClick={() => onRemoveContextItem(selectedContextItem.id)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Input */}
+          <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200">
+            <div className="flex items-center gap-2">
               <Input
                 placeholder="Ask a question..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
+                className="flex-1"
               />
-              <Button type="submit" size="icon">
+              <Button type="submit" size="icon" disabled={!inputValue.trim()}>
                 <Send className="h-4 w-4" />
               </Button>
-            </form>
-          </div>
+            </div>
+          </form>
         </TabsContent>
 
-        <TabsContent value="suggestions" className="flex-1 overflow-y-auto p-4 space-y-4 m-0">
-          <div className="space-y-4">
-            <h4 className="text-sm font-medium">Suggested Questions</h4>
-            {[
-              "Can you explain the key concepts from the last lecture?",
-              "What are the most important points to remember for the exam?",
-              "How does this topic relate to what we learned earlier?",
-              "Can you create a quiz to test my understanding?",
-            ].map((question, index) => (
+        <TabsContent value="suggestions" className="flex-1 p-4 m-0 overflow-y-auto">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">Try asking about:</h3>
+          <div className="grid gap-2">
+            {suggestions.map((suggestion, index) => (
               <Button
                 key={index}
                 variant="outline"
-                className="w-full justify-start text-left h-auto py-2"
-                onClick={() => {
-                  setInputValue(question)
-                }}
+                className="justify-start h-auto py-3 px-4 text-left"
+                onClick={() => handleSuggestionClick(suggestion)}
               >
-                {question}
+                {suggestion}
               </Button>
             ))}
-          </div>
-
-          <div className="space-y-4 pt-4">
-            <h4 className="text-sm font-medium">Learning Tips</h4>
-            <div className="bg-muted p-3 rounded-lg">
-              <div className="flex gap-2">
-                <Lightbulb className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-sm">
-                  Try explaining the concepts you're learning in your own words. This technique, known as the Feynman
-                  Method, helps identify gaps in your understanding.
-                </p>
-              </div>
-            </div>
-            <div className="bg-muted p-3 rounded-lg">
-              <div className="flex gap-2">
-                <Lightbulb className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-sm">
-                  Research shows that spaced repetition is more effective than cramming. Review material at increasing
-                  intervals to improve long-term retention.
-                </p>
-              </div>
-            </div>
           </div>
         </TabsContent>
       </Tabs>

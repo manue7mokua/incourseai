@@ -2,16 +2,17 @@
 
 import { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Highlighter, Pencil, X } from "lucide-react"
+import { Highlighter, Pencil, X, MessageCircle } from "lucide-react"
 
 interface AnnotationPopupProps {
   rect: DOMRect
   onHighlight: (color?: string) => void
   onAddNote: () => void
+  onAddToContext: () => void
   onClose: () => void
 }
 
-export function AnnotationPopup({ rect, onHighlight, onAddNote, onClose }: AnnotationPopupProps) {
+export function AnnotationPopup({ rect, onHighlight, onAddNote, onAddToContext, onClose }: AnnotationPopupProps) {
   const popupRef = useRef<HTMLDivElement>(null)
 
   // Position the popup near the selection
@@ -104,6 +105,18 @@ export function AnnotationPopup({ rect, onHighlight, onAddNote, onClose }: Annot
         title="Add note"
       >
         <Pencil className="h-4 w-4 text-orange-500" />
+      </Button>
+
+      <div className="w-px h-6 bg-gray-200 mx-1"></div>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0 hover:bg-purple-100"
+        onClick={onAddToContext}
+        title="Ask AI about this"
+      >
+        <MessageCircle className="h-4 w-4 text-purple-600" />
       </Button>
 
       <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100" onClick={onClose} title="Close">

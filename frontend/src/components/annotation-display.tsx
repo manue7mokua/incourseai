@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Check, Pencil, Trash2 } from "lucide-react"
-import type { Annotation } from "./file-viewer"
+import type { Annotation } from "./pdf-viewer"
 
 interface AnnotationDisplayProps {
   annotation: Annotation
