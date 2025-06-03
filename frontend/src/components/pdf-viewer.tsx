@@ -463,7 +463,7 @@ export default function PDFViewer({ fileID }: { fileID: string }) {
           <Card
             className={`flex-1 overflow-hidden py-0 ${zenMode ? "bg-gray-800 border-gray-700 h-[calc(100vh-64px)]" : ""}`}
           >
-            <CardContent className="p-0 h-[80vh]">
+            <CardContent className="p-0 h-[75vh]">
               <div
                 ref={scrollContainerRef}
                 className={`h-full overflow-y-auto ${zenMode ? "bg-gray-900" : "bg-gray-100"} flex flex-col items-center`}

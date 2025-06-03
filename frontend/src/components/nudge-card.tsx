@@ -28,10 +28,10 @@ export function NudgeCard({ nudge }: NudgeCardProps) {
 
   return (
     <Card className={`border ${getPriorityStyles()}`}>
-      <CardContent className="p-4">
-        <div className="flex items-start gap-4">
+      <CardContent>
+        <div className="flex items-center gap-4 ">
           <div
-            className={`rounded-full p-2 ${
+            className={`rounded-full ${
               nudge.priority === "high"
                 ? "bg-red-100 text-red-600"
                 : nudge.priority === "medium"
@@ -45,8 +45,7 @@ export function NudgeCard({ nudge }: NudgeCardProps) {
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-medium">{nudge.message}</p>
-                <p className="text-sm text-muted-foreground flex items-center mt-1">
-                  <Clock className="h-3 w-3 mr-1" />
+                <p className="text-sm text-muted-foreground flex items-center">
                   {nudge.course} • {nudge.dueDate}
                 </p>
               </div>
