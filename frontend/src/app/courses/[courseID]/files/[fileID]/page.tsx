@@ -10,7 +10,7 @@ export default async function FileViewPage({
 }) {
   const fileID = (await params).fileID;
   return (
-    <div className="min-h-screen p-5 bg-gradient-to-br from-orange-50 to-pink-50">
+    <div className="min-h-screen px-5 pt-5 bg-gradient-to-br from-orange-50 to-pink-50">
       <div className="flex items-center gap-2 mb-2">
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="gap-1">

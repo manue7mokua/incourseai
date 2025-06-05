@@ -364,14 +364,14 @@ export default function PDFViewer({ fileID }: { fileID: string }) {
 
   return (
     <div
-      className={`h-screen transition-all duration-300 ${zenMode ? "bg-gray-900" : "bg-gradient-to-br from-orange-50 to-pink-50"}`}
+      className={`max-h-screen transition-all duration-300 ${zenMode ? "bg-gray-900" : "bg-gradient-to-br from-orange-50 to-pink-50"}`}
     >
       <div className={`flex ${zenMode ? "h-screen" : ""}`}>
         {/* PDF Viewer */}
         <div className={`transition-all duration-300 ${zenMode ? "w-full h-full" : "max-w-6xl mx-auto flex-1"}`}>
           {/* Header */}
-          <Card className={`${zenMode ? "bg-gray-800 border-gray-700" : "my-4"} flex-shrink-0`}>
-            <CardContent className="py-4 flex items-center justify-between">
+          <Card className={`${zenMode ? "bg-gray-800 border-gray-700" : "my-2"} flex-shrink-0 py-1`}>
+            <CardContent className="flex items-center justify-between py-0">
               {/* Controls */}
               {numPages && (
                 <div className="flex flex-wrap items-center gap-4">
@@ -429,8 +429,7 @@ export default function PDFViewer({ fileID }: { fileID: string }) {
                     onClick={handleDownload}
                     className={`flex items-center gap-2 ${zenMode ? "border-gray-600 text-gray-300 hover:bg-gray-700" : ""}`}
                   >
-                    <Download className="h-4 w-4" />
-                    Download
+                    <Download className="h-8 w-8" />
                   </Button>
                 </div>
               )}
@@ -463,7 +462,7 @@ export default function PDFViewer({ fileID }: { fileID: string }) {
           <Card
             className={`flex-1 overflow-hidden py-0 ${zenMode ? "bg-gray-800 border-gray-700 h-[calc(100vh-64px)]" : ""}`}
           >
-            <CardContent className="p-0 h-[75vh]">
+            <CardContent className="p-0 h-[85vh]">
               <div
                 ref={scrollContainerRef}
                 className={`h-full overflow-y-auto ${zenMode ? "bg-gray-900" : "bg-gray-100"} flex flex-col items-center`}
