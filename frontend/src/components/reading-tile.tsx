@@ -63,7 +63,7 @@ export function ReadingTile({ reading, courseID }: ReadingProps) {
       </div>
       <div className="flex items-center gap-2 justify-end">
         <p className="text-sm text-muted-foreground mr-2">{reading.lastRead}</p>
-        <Link href={`/courses/${courseID}/files/${1}`}>
+        <Link href={`/courses/${courseID}/files/${reading.id}`}>
           <Button size="sm">
             {reading.lastRead === "Completed" ? "Review" : "Continue Reading"}
           </Button>
