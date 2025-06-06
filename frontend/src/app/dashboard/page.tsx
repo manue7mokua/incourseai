@@ -98,10 +98,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Main Content - Side by Side Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-screen-xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-screen-3xl mx-auto">
           {/* Recent Activity */}
           <div className="w-full">
-            <Card className="shadow-sm border-border/50 h-fit">
+            <Card className="shadow-sm border-border/50 pb-0">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-semibold">Recent Activity</h2>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </CardContent>
-              <CardFooter className="border-t bg-muted/50 p-3">
+              <CardFooter className="border-t bg-muted/50 p-3 [.border-t]:pt-3">
                 <div className="flex justify-between items-center w-full text-xs md:text-sm">
                   <div className="flex items-center">
                     <Clock className="mr-2 h-4 w-4 text-muted-foreground" />

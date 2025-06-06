@@ -18,8 +18,8 @@ interface CourseCardProps {
 
 export function CourseCard({ course }: CourseCardProps) {
   return (
-    <Link href={`/course/${course.id}`}>
-      <Card className="h-full overflow-hidden card-hover">
+    <Link href={`/courses/${course.id}`}>
+      <Card className="h-full overflow-hidden card-hover pb-0 justify-between">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className={`${course.color} text-white p-2 rounded-lg`}>
@@ -38,7 +38,7 @@ export function CourseCard({ course }: CourseCardProps) {
             Last activity: {course.lastActivity}
           </p>
         </CardContent>
-        <CardFooter className="bg-muted/50 px-6 py-3 text-sm">
+        <CardFooter className="bg-muted/50 px-6 py-3 text-sm [.border-t]:pt-3">
           Continue Learning
         </CardFooter>
       </Card>
