@@ -35,11 +35,10 @@ function calculateSemesterProgress(semester: string | null, year: string | null)
 }
 
 export function CourseCard({ course }: { course: Course }) {
-  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
   const progress = calculateSemesterProgress(course.semester, course.year);
   
   return (
-    <Link href={`/courses/${course.lmsId}`}>
+    <Link href={`/courses/${course.lmsProvider}-${course.lmsId}`}>
       <Card className="h-full overflow-hidden card-hover pb-0 justify-between">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
