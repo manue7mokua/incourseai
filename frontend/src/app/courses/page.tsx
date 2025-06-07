@@ -2,102 +2,40 @@ import { Navbar } from "@/components/navbar";
 import { CourseCard } from "@/components/course-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BookOpen, FileText, Layers, Search } from "lucide-react";
+import { Course } from "@/lib/types/course";
+import { CourseList } from "./course-list";
 
-// Course data matching the CourseCard interface
-const courses = [
-  {
-    id: "cs101",
-    name: "CS 101: Introduction to Computer Science",
-    instructor: "Dr. Smith",
-    progress: 65,
-    lastActivity: "Lecture 8 Summary",
-    color: "bg-blue-500",
-    icon: BookOpen,
-  },
-  {
-    id: "econ201",
-    name: "ECON 201: Macroeconomics",
-    instructor: "Prof. Johnson",
-    progress: 42,
-    lastActivity: "Quiz on Supply and Demand",
-    color: "bg-green-500",
-    icon: Layers,
-  },
-  {
-    id: "psych110",
-    name: "PSYCH 110: Introduction to Psychology",
-    instructor: "Dr. Williams",
-    progress: 78,
-    lastActivity: "Flashcards on Cognitive Biases",
-    color: "bg-purple-500",
-    icon: FileText,
-  },
-  {
-    id: "math220",
-    name: "MATH 220: Calculus I",
-    instructor: "Prof. Garcia",
-    progress: 55,
-    lastActivity: "Problem Set 7",
-    color: "bg-orange-500",
-    icon: BookOpen,
-  },
-  {
-    id: "hist105",
-    name: "HIST 105: World History",
-    instructor: "Dr. Chen",
-    progress: 85,
-    lastActivity: "Essay on Ancient Civilizations",
-    color: "bg-red-500",
-    icon: FileText,
-  },
-  {
-    id: "bio150",
-    name: "BIO 150: Introduction to Biology",
-    instructor: "Dr. Martinez",
-    progress: 72,
-    lastActivity: "Lab Report on Cell Structure",
-    color: "bg-teal-500",
-    icon: Layers,
-  },
-];
+export default async function CoursesPage() {
+  const courses: Course[] = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + '/api/courses').then(res => res.json()) as Course[];
 
-export default function CoursesPage() {
+  // Generate semester options for the last 6 semesters
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const currentSemester = currentMonth >= 7 ? 'Fall' : 'Spring';
+  
+  const semesterOptions = [];
+  let year = currentYear;
+  let semester = currentSemester;
+  
+  for (let i = 0; i < 6; i++) {
+    semesterOptions.push(`${semester} ${year}`);
+    if (semester === 'Fall') {
+      semester = 'Spring';
+    } else {
+      semester = 'Fall';
+      year--;
+    }
+  }
+  semesterOptions.push('All Courses');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-pink-50">
       <Navbar />
       <main className="container mx-auto py-6 px-4 md:px-6">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Your Courses
-            </h1>
-            <p className="text-lg text-muted-foreground mt-2">
-              Browse your enrolled classes and keep learning
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search courses..."
-                className="pl-10 w-full sm:w-64"
-              />
-            </div>
-            <Button>
-              <BookOpen className="h-4 w-4 mr-2" />
-              Add Course
-            </Button>
-          </div>
-        </div>
-
-        {/* Course Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
-        </div>
+        <CourseList initialCourses={courses} />
 
         {/* Empty State for when no courses */}
         {courses.length === 0 && (
