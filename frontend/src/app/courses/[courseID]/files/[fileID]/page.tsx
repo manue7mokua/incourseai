@@ -7,6 +7,12 @@ import { FileDetails } from "@/lib/types/course";
 function getViewer(fileDetails: FileDetails) {
   if (fileDetails.type === "application/pdf") {
     return <Viewer fileDetails={fileDetails} />;
+  } else {
+    return (
+      <div className="text-center text-red-500">
+        Unsupported file type: {fileDetails.type}. Please upload a PDF file.
+      </div>
+    );
   }
 }
 
