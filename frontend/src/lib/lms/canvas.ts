@@ -1,4 +1,4 @@
-import { Course, Module, ModuleItem } from "../types/course";
+import { Course, FileDetails, Module, ModuleItem } from "../types/course";
 import LMSProvider from "./lms-provider";
 
 class CanvasProvider extends LMSProvider {
@@ -16,7 +16,6 @@ class CanvasProvider extends LMSProvider {
         let courseSemester = ''
         let courseYear = ''
         let courseCode = ''
-        let firstSplit = ''
         if (fullCourseName != null) {
             if (fullCourseName.includes('Spring')) {
                 courseSemester = 'Spring'
@@ -27,21 +26,19 @@ class CanvasProvider extends LMSProvider {
             } else if (fullCourseName.includes('Winter')) {
                 courseSemester = 'Winter'
             }
-            courseYear = fullCourseName.split(' ').slice(-1)[0];
+            // match the year in the full course name
+            const yearMatch = fullCourseName.match(/\d{4}/);
+            if (yearMatch) {
+                courseYear = yearMatch[0];
+            } else {
+                courseYear = 'Not found'
+            }
 
             // 2024 Fall Faculty-Student Team Project (VIP) (EECE-302-01)
             // 2024 Fall Microcomputer Design (EECE-416-01)
-            // course code is in the last brackets
-            if (fullCourseName.includes('(')) {
-                firstSplit = fullCourseName.split('(')[0];
-                if (firstSplit.includes(')')) {
-                    courseCode = firstSplit.split(')')[1];
-                } else {
-                    courseCode = 'Not found'
-                }
-            } else {
-                courseCode = 'Not found'
-            }
+            // match what is in the last brackets
+            const courseCodeMatch = fullCourseName.match(/\(([^)]+)\)$/);
+            courseCode = courseCodeMatch ? courseCodeMatch[1] : '';
         } else {
             courseCode = 'Not found'
             courseYear = 'Not found'
@@ -52,7 +49,7 @@ class CanvasProvider extends LMSProvider {
             id: null,
             lmsId: courseData.id,
             lmsProvider: 'canvas',
-            name: courseData.course_code,
+            name: courseData.name,
             code: courseCode,
             instructor: null,
             description: null,
@@ -84,8 +81,21 @@ class CanvasProvider extends LMSProvider {
             courseId: courseId,
             type: moduleItemData.type,
             url: moduleItemData.url,
+            lmsContentId: moduleItemData.content_id,
         };
         return moduleItem;
+    }
+
+    convertCanvasFileDetails(fileDetailsData: any): FileDetails {
+        const fileDetails: FileDetails = {
+            id: null,
+            canvasId: fileDetailsData.id,
+            name: fileDetailsData.filename,
+            url: fileDetailsData.url,
+            size: fileDetailsData.size,
+            type: fileDetailsData['content-type'],
+        };
+        return fileDetails;
     }
 
     async getCourses(): Promise<Course[]> {
@@ -99,7 +109,15 @@ class CanvasProvider extends LMSProvider {
             throw new Error('Failed to fetch courses');
         }
         const coursesData = await coursesResponse.json();
-        return coursesData.map((course: any) => this.convertCanvasCourse(course));
+
+        // eliminate courses whose name is null
+        const filteredCourses = coursesData.filter((course: any) => {
+            if (course.access_restricted_by_date) {
+                return false;
+            }
+            return true;
+        });
+        return filteredCourses.map((course: any) => this.convertCanvasCourse(course));
     }
 
     async getCourse(courseId: string): Promise<Course> {
@@ -147,6 +165,22 @@ class CanvasProvider extends LMSProvider {
         }
         const moduleItemsData = await moduleItemsResponse.json();
         return moduleItemsData.map((moduleItem: any) => this.convertCanvasModuleItem(moduleItem, moduleId, courseId));
+    }
+
+    async getFileDetails(fileId: string, courseId: string): Promise<FileDetails> {
+        const url = `${this.apiBaseUrl}/courses/${courseId}/files/${fileId}`;
+
+        const fileDetailsResponse = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${this.apiKey}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!fileDetailsResponse.ok) {
+            throw new Error('Failed to fetch file details');
+        }
+        const fileDetailsData = await fileDetailsResponse.json();
+        return this.convertCanvasFileDetails(fileDetailsData);
     }
 }
 

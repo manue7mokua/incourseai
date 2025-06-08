@@ -6,71 +6,18 @@ import { Badge } from "@/components/ui/badge"
 import { BookOpen, ChevronLeft, Clock, Download, Play, Plus, ThumbsUp, Brain, FlaskConical } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { SummaryViewer } from "@/components/summary-viewer"
-import { ReadingTile } from "@/components/reading-tile"
+import { ModuleList } from "@/components/module-list"
+import { Course, Module } from "@/lib/types/course"
 
 export default async function CoursePage({
   params,
 }: {
   params: { courseID: string }
 }) {
-  const courseID = (await params).courseID
+    const courseID = (await params).courseID;
 
-  // Sample course data - in a real app, fetch this based on params.id
-  const course = {
-    id: courseID,
-    name:
-      courseID === "cs101"
-        ? "CS 101: Introduction to Computer Science"
-        : courseID === "econ201"
-          ? "ECON 201: Macroeconomics"
-          : "PSYCH 110: Introduction to Psychology",
-    instructor: courseID === "cs101" ? "Dr. Smith" : courseID === "econ201" ? "Prof. Johnson" : "Dr. Williams",
-    progress: courseID === "cs101" ? 65 : courseID === "econ201" ? 42 : 78,
-    description:
-      "This course provides a comprehensive introduction to the fundamental concepts and principles of the subject.",
-    nextDeadline: "Problem Set 3 due in 2 days",
-    color: courseID === "cs101" ? "bg-blue-500" : courseID === "econ201" ? "bg-green-500" : "bg-purple-500",
-  }
-
-  // Sample lecture data
-  const lectures = [
-    {
-      id: "lecture1",
-      title: "Introduction to the Course",
-      date: "Sep 5, 2023",
-      duration: "50 min",
-      hasNotes: true,
-      hasSummary: true,
-      hasQuiz: true,
-    },
-    {
-      id: "lecture2",
-      title: "Core Concepts and Terminology",
-      date: "Sep 7, 2023",
-      duration: "55 min",
-      hasNotes: true,
-      hasSummary: true,
-      hasQuiz: true,
-    },
-    {
-      id: "lecture3",
-      title: "Practical Applications",
-      date: "Sep 12, 2023",
-      duration: "50 min",
-      hasNotes: true,
-      hasSummary: true,
-      hasQuiz: false,
-    },
-    {
-      id: "lecture4",
-      title: "Advanced Topics",
-      date: "Sep 14, 2023",
-      duration: "60 min",
-      hasNotes: true,
-      hasSummary: false,
-      hasQuiz: false,
-    },
-  ]
+  const course = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/courses/${courseID}`).then(res => res.json()) as Course;
+  const modules = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/courses/${courseID}/modules`).then(res => res.json()) as Module[];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-pink-50">
@@ -79,20 +26,20 @@ export default async function CoursePage({
         {/* Course Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
-            <Link href="/dashboard">
+            <Link href="/courses">
               <Button variant="ghost" size="sm" className="gap-1">
                 <ChevronLeft className="h-4 w-4" />
                 Back
               </Button>
             </Link>
-            <Badge className={course.color}>{course.id.toUpperCase()}</Badge>
+            <Badge className="bg-blue-500 text-white">{course.code}</Badge>
           </div>
 
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">{course.name}</h1>
               <p className="text-muted-foreground">
-                {course.instructor} • {course.nextDeadline}
+                {course.year} • {course.semester}
               </p>
             </div>
           </div>
@@ -112,9 +59,7 @@ export default async function CoursePage({
                   <CardContent>
                     <SummaryViewer
                       title="Course Overview"
-                      content={`This course covers the fundamental principles and concepts of ${course.name
-                        .split(":")[1]
-                        .trim()}. Throughout the semester, we will explore theoretical foundations and practical applications, with a focus on developing a strong understanding of core concepts.
+                      content={`This course covers the fundamental principles and concepts of ${course.name}. Throughout the semester, we will explore theoretical foundations and practical applications, with a focus on developing a strong understanding of core concepts.
 
 The course is structured around four main modules:
 1. Introduction and Basic Principles
@@ -146,52 +91,16 @@ By the end of this course, you will have developed a comprehensive understanding
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Lecture Notes</CardTitle>
-                    <CardDescription>Notes from the lectures</CardDescription>
+                    <CardTitle>Course Materials</CardTitle>
+                    <CardDescription>Access your course materials and resources</CardDescription>
                   </CardHeader>
-
                   <CardContent>
-                    <div className="grid gap-4">
-                      {[
-                        {
-                          id: "reading1",
-                          title: "Chapter 1: Introduction",
-                          type: "Textbook",
-                          pages: 24,
-                          lastRead: "Page 18",
-                          hasSummary: true,
-                          hasQuiz: true,
-                          hasNotes: true,
-                        },
-                        {
-                          id: "reading2",
-                          title: "Research Paper: Recent Advances",
-                          type: "PDF",
-                          pages: 12,
-                          lastRead: "Not started",
-                          hasSummary: false,
-                          hasQuiz: false,
-                          hasNotes: false,
-                        },
-                        {
-                          id: "reading3",
-                          title: "Lecture Notes: Week 3",
-                          type: "Notes",
-                          pages: 8,
-                          lastRead: "Completed",
-                          hasSummary: false,
-                          hasQuiz: false,
-                          hasNotes: true,
-                        },
-                      ].map((reading) => (
-                        <ReadingTile reading={reading} courseID={courseID} key={reading.id} />
-                      ))}
-                    </div>
+                    <ModuleList modules={modules} courseID={courseID} />
                   </CardContent>
                   <CardFooter className="border-t">
                     <Button className="w-full">
                       <Plus className="mr-2 h-4 w-4" />
-                      Add New Reading
+                      Add New Material
                     </Button>
                   </CardFooter>
                 </Card>
@@ -348,5 +257,5 @@ By the end of this course, you will have developed a comprehensive understanding
         </div>
       </div>
     </div>
-  )
+  );
 }

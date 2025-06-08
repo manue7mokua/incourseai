@@ -23,6 +23,7 @@ export interface Module {
 export interface ModuleItem {
     id: string | null;
     lmsId: string | null;
+    lmsContentId: string | null;
     name: string;
     moduleId: string;
     courseId: string;
@@ -64,4 +65,14 @@ export interface Question {
     options: string[];
     correctOption: number;
     explanation: string | null;
+}
+
+
+export interface FileDetails {
+    id: string | null;
+    canvasId: string | null;
+    name: string;
+    size: number;
+    type: string;
+    url: string;
 }
