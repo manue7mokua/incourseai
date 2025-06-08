@@ -38,7 +38,9 @@ export function CourseCard({ course }: { course: Course }) {
   const progress = calculateSemesterProgress(course.semester, course.year);
   
   return (
-    <Link href={`/courses/${course.lmsProvider}-${course.lmsId}`}>
+    <Link href={{
+      pathname: `/courses/${course.lmsProvider}-${course.lmsId}`,
+    }}>
       <Card className="h-full overflow-hidden card-hover pb-0 justify-between">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">

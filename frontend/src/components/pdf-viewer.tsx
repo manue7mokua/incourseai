@@ -17,6 +17,7 @@ import { AnnotationPopup } from "./annotation-popup"
 import { AnnotationDisplay } from "./annotation-display"
 import { nanoid } from "@/lib/utils"
 import { ChatPanel } from "./ai-chat-panel"
+import { FileDetails } from "@/lib/types/course"
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString()
 
@@ -52,15 +53,15 @@ export type ContextItem = {
   pageNumber: number
 }
 
-export default function PDFViewer({ fileID }: { fileID: string }) {
-  const [file] = useState<PDFFile>("/object.pdf")
+export default function PDFViewer({ fileDetails }: { fileDetails: FileDetails }) {
+  const [file, setFile] = useState<PDFFile>(null)
   const [numPages, setNumPages] = useState<number>()
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null)
   const [containerWidth, setContainerWidth] = useState<number>()
   const [currentPage, setCurrentPage] = useState(1)
   const [pageInput, setPageInput] = useState("1")
   const [zoom, setZoom] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const pageRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
   const textLayerRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
@@ -361,6 +362,28 @@ export default function PDFViewer({ fileID }: { fileID: string }) {
     scrollContainer.addEventListener("scroll", handleScroll)
     return () => scrollContainer.removeEventListener("scroll", handleScroll)
   }, [numPages, currentPage])
+
+  // Add useEffect to fetch the PDF when component mounts
+  useEffect(() => {
+    const fetchPDF = async () => {
+      try {
+        const response = await fetch(fileDetails.url)
+        if (!response.ok) {
+          throw new Error('Failed to fetch PDF')
+        }
+        const blob = await response.blob()
+        // Convert blob to File object
+        const file = new File([blob], fileDetails.name, { type: 'application/pdf' })
+        setFile(file)
+      } catch (error) {
+        console.error('Error loading PDF:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchPDF()
+  }, [fileDetails.url, fileDetails.name])
 
   return (
     <div

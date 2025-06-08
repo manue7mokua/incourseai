@@ -14,7 +14,7 @@ export default async function CoursePage({
 }: {
   params: { courseID: string }
 }) {
-  const courseID = (await params).courseID;
+    const courseID = (await params).courseID;
 
   const course = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/courses/${courseID}`).then(res => res.json()) as Course;
   const modules = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/courses/${courseID}/modules`).then(res => res.json()) as Module[];

@@ -50,7 +50,7 @@ export function ReadingTile({ reading, courseID, module }: { reading: ModuleItem
       </div>
       <div className="flex items-center gap-2 justify-end">
         {/* <p className="text-sm text-muted-foreground mr-2">{reading.lastRead}</p> */}
-        <Link href={`/courses/${courseID}/files/${reading.id}`}>
+        <Link href={`/courses/${courseID}/files/${reading.lmsContentId}`}>
           <Button size="sm">
             Continue Reading
           </Button>

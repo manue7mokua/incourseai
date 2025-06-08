@@ -1,4 +1,4 @@
-import { Course, Module, ModuleItem } from "../types/course";
+import { Course, FileDetails, Module, ModuleItem } from "../types/course";
 import LMSProvider from "./lms-provider";
 
 class CanvasProvider extends LMSProvider {
@@ -81,8 +81,21 @@ class CanvasProvider extends LMSProvider {
             courseId: courseId,
             type: moduleItemData.type,
             url: moduleItemData.url,
+            lmsContentId: moduleItemData.content_id,
         };
         return moduleItem;
+    }
+
+    convertCanvasFileDetails(fileDetailsData: any): FileDetails {
+        const fileDetails: FileDetails = {
+            id: null,
+            canvasId: fileDetailsData.id,
+            name: fileDetailsData.filename,
+            url: fileDetailsData.url,
+            size: fileDetailsData.size,
+            type: fileDetailsData['content-type'],
+        };
+        return fileDetails;
     }
 
     async getCourses(): Promise<Course[]> {
@@ -152,6 +165,22 @@ class CanvasProvider extends LMSProvider {
         }
         const moduleItemsData = await moduleItemsResponse.json();
         return moduleItemsData.map((moduleItem: any) => this.convertCanvasModuleItem(moduleItem, moduleId, courseId));
+    }
+
+    async getFileDetails(fileId: string, courseId: string): Promise<FileDetails> {
+        const url = `${this.apiBaseUrl}/courses/${courseId}/files/${fileId}`;
+
+        const fileDetailsResponse = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${this.apiKey}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!fileDetailsResponse.ok) {
+            throw new Error('Failed to fetch file details');
+        }
+        const fileDetailsData = await fileDetailsResponse.json();
+        return this.convertCanvasFileDetails(fileDetailsData);
     }
 }
 
