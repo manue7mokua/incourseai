@@ -12,7 +12,7 @@ export function ReadingTile({ reading, courseID, module }: { reading: ModuleItem
       key={reading.id}
     >
       <div className="flex flex-col gap-5">
-        <div key={`${reading.lmsId}-${module.lmsId}`} className="flex items-center ">
+        <div className="flex items-center ">
           <div className="flex items-center gap-4">
             <div className="rounded-full p-2 bg-blue-100 text-blue-600">
               <FileText className="h-5 w-5" />
