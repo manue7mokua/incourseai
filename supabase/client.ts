@@ -53,15 +53,71 @@ export type Enums<T extends keyof Database["public"]["Enums"]> =
 export type User = Tables<"users">;
 export type Course = Tables<"courses">;
 export type Enrollment = Tables<"enrollments">;
+export type Module = Tables<"modules">;
+export type ModuleItem = Tables<"module_items">;
+export type FlashcardDeck = Tables<"flashcard_decks">;
+export type FlashcardItem = Tables<"flashcard_items">;
+export type Quiz = Tables<"quizzes">;
+export type QuizQuestion = Tables<"quiz_questions">;
+export type QuizAttempt = Tables<"quiz_attempts">;
+export type File = Tables<"files">;
 
 // Insert types for creating new records
 export type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 export type CourseInsert = Database["public"]["Tables"]["courses"]["Insert"];
 export type EnrollmentInsert =
   Database["public"]["Tables"]["enrollments"]["Insert"];
+export type ModuleInsert = Database["public"]["Tables"]["modules"]["Insert"];
+export type ModuleItemInsert =
+  Database["public"]["Tables"]["module_items"]["Insert"];
+export type FlashcardDeckInsert =
+  Database["public"]["Tables"]["flashcard_decks"]["Insert"];
+export type FlashcardItemInsert =
+  Database["public"]["Tables"]["flashcard_items"]["Insert"];
+export type QuizInsert = Database["public"]["Tables"]["quizzes"]["Insert"];
+export type QuizQuestionInsert =
+  Database["public"]["Tables"]["quiz_questions"]["Insert"];
+export type QuizAttemptInsert =
+  Database["public"]["Tables"]["quiz_attempts"]["Insert"];
+export type FileInsert = Database["public"]["Tables"]["files"]["Insert"];
 
 // Update types for updating existing records
 export type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
 export type CourseUpdate = Database["public"]["Tables"]["courses"]["Update"];
 export type EnrollmentUpdate =
   Database["public"]["Tables"]["enrollments"]["Update"];
+export type ModuleUpdate = Database["public"]["Tables"]["modules"]["Update"];
+export type ModuleItemUpdate =
+  Database["public"]["Tables"]["module_items"]["Update"];
+export type FlashcardDeckUpdate =
+  Database["public"]["Tables"]["flashcard_decks"]["Update"];
+export type FlashcardItemUpdate =
+  Database["public"]["Tables"]["flashcard_items"]["Update"];
+export type QuizUpdate = Database["public"]["Tables"]["quizzes"]["Update"];
+export type QuizQuestionUpdate =
+  Database["public"]["Tables"]["quiz_questions"]["Update"];
+export type QuizAttemptUpdate =
+  Database["public"]["Tables"]["quiz_attempts"]["Update"];
+export type FileUpdate = Database["public"]["Tables"]["files"]["Update"];
+
+// Helper types for complex queries with relations
+export type CourseWithModules = Course & {
+  modules: Module[];
+};
+
+export type ModuleWithItems = Module & {
+  module_items: ModuleItem[];
+};
+
+export type FlashcardDeckWithItems = FlashcardDeck & {
+  flashcard_items: FlashcardItem[];
+};
+
+export type QuizWithQuestions = Quiz & {
+  quiz_questions: QuizQuestion[];
+};
+
+export type QuizWithAttempts = Quiz & {
+  quiz_attempts: QuizAttempt[];
+  quiz_questions: QuizQuestion[];
+};
