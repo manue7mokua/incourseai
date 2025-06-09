@@ -9,7 +9,7 @@ Before you start, make sure you have:
 - [ ] **Git** installed and configured
 - [ ] **Node.js** (v18 or higher) and **npm**
 - [ ] **Docker Desktop** installed and running
-- [ ] **Code editor** (VS Code recommended)
+- [ ] **Code editor** (Cursor recommended)
 - [ ] **Terminal/Command Line** access
 
 ## 🏁 Quick Setup (15 minutes)
@@ -237,14 +237,12 @@ supabase logs               # View database logs
 1. **Explore the Database**: Visit http://127.0.0.1:54323 and browse the tables
 2. **Read the Code**: Look at `supabase/client.ts` for database connection setup
 3. **Check the Schema**: Review `supabase/migrations/` to understand database structure
-4. **Join Team Chat**: Ask questions in our team channel
-5. **Start Coding**: Pick up a task and start building!
+4. **Start Coding**: Pick up a task and start building!
 
 ## 📞 Need Help?
 
 - **Database Issues**: Check `supabase/README.md` for detailed documentation
 - **Frontend Issues**: Look in `frontend/` directory for specific guides
-- **Team Questions**: Ask in our team chat/Slack
 - **Bugs**: Create an issue in our project repository
 
 Welcome to the team! 🎉
