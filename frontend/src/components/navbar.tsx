@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,10 +25,19 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/sign-in");
+  };
 
   const isActive = (path: string) => pathname === path;
 
@@ -94,36 +103,49 @@ export function Navbar() {
             <Bell className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-1">
-                <User className="h-5 w-5" />
-                <span className="hidden md:inline-block">Alex</span>
-                <ChevronDown className="h-4 w-4 hidden md:block" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/profile">
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/settings">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="h-4 w-4 mr-2" />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {loading ? (
+            <div className="h-8 w-24 bg-gray-200 rounded animate-pulse"></div>
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1">
+                  <User className="h-5 w-5" />
+                  <span className="hidden md:inline-block">
+                    {user.email?.split("@")[0]}
+                  </span>
+                  <ChevronDown className="h-4 w-4 hidden md:block" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User className="h-4 w-4 mr-2" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="cursor-pointer"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild variant="ghost">
+              <Link href="/sign-in">Sign In</Link>
+            </Button>
+          )}
         </div>
       </div>
 

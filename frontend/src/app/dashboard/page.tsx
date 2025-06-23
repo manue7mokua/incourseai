@@ -1,5 +1,6 @@
 "use client";
 
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +14,7 @@ import { BookOpen, Clock, FileText, Layers } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { NudgeCard } from "@/components/nudge-card";
 
-export default function DashboardPage() {
+function DashboardPage() {
   // Sample activity data
   const recentActivity = [
     {
@@ -227,5 +228,13 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function WrappedDashboardPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardPage />
+    </ProtectedRoute>
   );
 }
