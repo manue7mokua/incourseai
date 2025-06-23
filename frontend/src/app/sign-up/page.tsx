@@ -18,16 +18,51 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleEmailSignUp = (e: React.FormEvent) => {
+  // State for email/password sign up
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally handle the sign-up logic
-    // For now, we'll just redirect to onboarding
-    router.push("/onboarding");
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      });
+
+      if (error) {
+        setError(error.message);
+      } else if (data.user) {
+        // Since email confirmation is enabled, Supabase sends a confirmation link.
+        // The user is technically signed up but needs to confirm.
+        // We can proceed to onboarding.
+        router.push("/onboarding");
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMagicLink = (e: React.FormEvent) => {
@@ -277,6 +312,15 @@ export default function SignUpPage() {
                 <TabsContent value="email">
                   <form onSubmit={handleEmailSignUp}>
                     <div className="grid gap-4">
+                      {error && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm"
+                        >
+                          {error}
+                        </motion.div>
+                      )}
                       <div className="grid gap-2">
                         <Label htmlFor="fullname">Full Name</Label>
                         <Input
@@ -284,6 +328,9 @@ export default function SignUpPage() {
                           type="text"
                           placeholder="John Doe"
                           required
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          disabled={loading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -293,6 +340,9 @@ export default function SignUpPage() {
                           type="email"
                           placeholder="firstname.lastname@college.edu"
                           required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          disabled={loading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -302,10 +352,17 @@ export default function SignUpPage() {
                           type="password"
                           placeholder="Create a strong password"
                           required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          disabled={loading}
                         />
                       </div>
-                      <Button type="submit" className="w-full">
-                        Sign Up
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={loading}
+                      >
+                        {loading ? "Signing Up..." : "Sign Up"}
                       </Button>
                     </div>
                   </form>
