@@ -18,6 +18,7 @@ export interface Module {
   description: string | null;
   itemsCount: number;
   moduleItems: ModuleItem[];
+  prerequisites: string[] | null;
 }
 
 export interface ModuleItem {

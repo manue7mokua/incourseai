@@ -68,6 +68,7 @@ class CanvasProvider extends LMSProvider {
       description: null,
       itemsCount: moduleData.items_count,
       moduleItems: [],
+      prerequisites: moduleData.prerequisites || null,
     };
     return module;
   }
