@@ -30,6 +30,7 @@ export default function SignUpPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,14 +66,62 @@ export default function SignUpPage() {
     }
   };
 
-  const handleMagicLink = (e: React.FormEvent) => {
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally send the magic link
-    setMagicLinkSent(true);
-    // After a short delay, redirect to onboarding (simulating magic link click)
-    setTimeout(() => {
-      router.push("/onboarding");
-    }, 3000);
+
+    if (!magicLinkSent) {
+      setLoading(true);
+      setError(null);
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+          },
+        });
+
+        if (error) {
+          setError(error.message);
+        } else {
+          setMagicLinkSent(true);
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(true);
+      setError(null);
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.verifyOtp({
+          email,
+          token,
+          type: "email",
+        });
+
+        if (error) {
+          setError(error.message);
+        } else if (session) {
+          router.push("/dashboard");
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const handleSocialSignUp = () => {
@@ -370,6 +419,25 @@ export default function SignUpPage() {
                 <TabsContent value="magic">
                   <form onSubmit={handleMagicLink}>
                     <div className="grid gap-4">
+                      {error && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm"
+                        >
+                          {error}
+                        </motion.div>
+                      )}
+                      {magicLinkSent && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-green-50 text-green-700 p-3 rounded-lg border border-green-200 text-sm"
+                        >
+                          Check your email for the magic link or enter the
+                          6-digit code below.
+                        </motion.div>
+                      )}
                       <div className="grid gap-2">
                         <Label htmlFor="magic-email">School Email</Label>
                         <Input
@@ -377,25 +445,40 @@ export default function SignUpPage() {
                           type="email"
                           placeholder="firstname.lastname@college.edu"
                           required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          disabled={loading || magicLinkSent}
                         />
                       </div>
+                      {magicLinkSent && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="grid gap-2 overflow-hidden"
+                        >
+                          <Label htmlFor="magic-otp">One-Time Code</Label>
+                          <Input
+                            id="magic-otp"
+                            type="text"
+                            placeholder="123456"
+                            required
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                            disabled={loading}
+                          />
+                        </motion.div>
+                      )}
                       <Button
                         type="submit"
                         className="w-full"
-                        disabled={magicLinkSent}
+                        disabled={loading}
                       >
-                        {magicLinkSent ? "Magic Link Sent!" : "Send Magic Link"}
+                        {loading
+                          ? "..."
+                          : magicLinkSent
+                          ? "Sign Up with Code"
+                          : "Send Magic Link"}
                       </Button>
-                      {magicLinkSent && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-sm text-center text-muted-foreground bg-green-50 p-3 rounded-lg border border-green-200"
-                        >
-                          ✨ Check your inbox for the magic link. You&apos;ll be
-                          redirected to onboarding shortly.
-                        </motion.div>
-                      )}
                     </div>
                   </form>
                 </TabsContent>
