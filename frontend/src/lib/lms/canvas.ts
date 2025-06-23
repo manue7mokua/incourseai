@@ -1,4 +1,5 @@
 import { Course, FileDetails, Module, ModuleItem } from "../types/course";
+import { validateFileForProcessing } from "../utils/fileValidation";
 import LMSProvider from "./lms-provider";
 
 class CanvasProvider extends LMSProvider {
@@ -93,13 +94,27 @@ class CanvasProvider extends LMSProvider {
   }
 
   convertCanvasFileDetails(fileDetailsData: any): FileDetails {
+    const contentType = fileDetailsData["content-type"];
+    const fileName = fileDetailsData.filename;
+    const fileSize = fileDetailsData.size;
+
+    // Validate file for processing
+    const validation = validateFileForProcessing(
+      contentType,
+      fileName,
+      fileSize
+    );
+
     const fileDetails: FileDetails = {
       id: null,
       canvasId: fileDetailsData.id,
-      name: fileDetailsData.filename,
+      name: fileName,
       url: fileDetailsData.url,
-      size: fileDetailsData.size,
-      type: fileDetailsData["content-type"],
+      size: fileSize,
+      type: contentType,
+      isValidForProcessing: validation.isValid,
+      validationError: validation.error || null,
+      fileTypeName: validation.fileTypeName || null,
     };
     return fileDetails;
   }

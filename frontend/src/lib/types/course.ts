@@ -76,4 +76,7 @@ export interface FileDetails {
   size: number;
   type: string;
   url: string;
+  isValidForProcessing?: boolean;
+  validationError?: string | null;
+  fileTypeName?: string | null;
 }
