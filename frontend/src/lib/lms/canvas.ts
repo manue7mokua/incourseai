@@ -52,7 +52,7 @@ class CanvasProvider extends LMSProvider {
       name: courseData.name,
       code: courseCode,
       instructor: null,
-      description: null,
+      description: courseData.description || null,
       semester: courseSemester,
       year: courseYear,
     };
