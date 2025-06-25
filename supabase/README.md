@@ -1,12 +1,25 @@
-# Supabase Database Setup
+# Local Supabase Database Setup
 
-This directory contains the Supabase configuration and database schema for the incourse application.
+This guide helps you set up your local Supabase database and connect to the shared team database for the InCourse project.
 
-## 🚀 Quick Setup for Team Members
+## 🚀 Quick Setup for New Developers
 
-### **New Developer Setup**
+### **Prerequisites**
 
-If you're a new team member setting up this project, follow these steps:
+Make sure you have these installed:
+
+- [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started)
+- [Docker](https://docs.docker.com/get-docker/) (for local development)
+
+```bash
+# Install Supabase CLI (macOS)
+brew install supabase/tap/supabase
+
+# Install Supabase JavaScript client
+npm install @supabase/supabase-js
+```
+
+### **Initial Setup**
 
 ```bash
 # 1. Clone the repository (if not done already)
@@ -16,19 +29,15 @@ cd incourse
 # 2. Install dependencies
 npm install
 
-# 3. Install Supabase CLI
-brew install supabase/tap/supabase  # macOS
-# OR follow: https://supabase.com/docs/guides/cli/getting-started
-
-# 4. Start local development environment
+# 3. Start local development environment
 supabase start
 
-# 5. Copy environment template and update values
+# 4. Copy environment template and update values
 cp .env.local.example .env.local
 # Edit .env.local with your values (see Environment Setup section)
 ```
 
-### **Connecting to Shared Cloud Database**
+### **Connecting to Shared Team Database**
 
 ```bash
 # 1. Login to Supabase (one-time setup)
@@ -61,7 +70,9 @@ SUPABASE_ANON_KEY=<your-local-anon-key>
 # SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 ```
 
-### **Daily Development Workflow**
+The anon key will be displayed when you run `supabase start`.
+
+## Daily Development Workflow
 
 ```bash
 # Start your development day
@@ -72,267 +83,16 @@ npm run dev                 # Starts your frontend
 supabase stop              # Stops local database
 ```
 
-## Prerequisites
+## Local Services Access
 
-Make sure you have the following installed:
-
-- [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started)
-- [Docker](https://docs.docker.com/get-docker/) (for local development)
-- [@supabase/supabase-js](https://www.npmjs.com/package/@supabase/supabase-js) package
-
-### Installation Commands
-
-If not already installed:
-
-```bash
-# Install Supabase CLI (macOS)
-brew install supabase/tap/supabase
-
-# Install Supabase JavaScript client
-npm install @supabase/supabase-js
-```
-
-## Local Development Setup
-
-### 1. Start Local Supabase
-
-Run the following command from the project root:
-
-```bash
-# Start all Supabase services locally
-supabase start
-```
-
-This will:
-
-- Start a local PostgreSQL database
-- Launch Supabase Studio (web interface)
-- Set up authentication services
-- Apply all migrations from `supabase/migrations/`
-
-### 2. Access Local Services
-
-After starting, you'll have access to:
+After starting `supabase start`, you'll have access to:
 
 - **Database**: `postgresql://postgres:postgres@127.0.0.1:54322/postgres`
 - **API URL**: `http://127.0.0.1:54321`
 - **Studio**: `http://127.0.0.1:54323`
 - **Inbucket (Email testing)**: `http://127.0.0.1:54324`
 
-### 3. Environment Variables
-
-Update your `.env.local` file with the local development values:
-
-```env
-SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_ANON_KEY=<your-local-anon-key>
-```
-
-The anon key will be displayed when you run `supabase start`.
-
-### 4. Generate TypeScript Types
-
-Generate TypeScript types from your local database:
-
-```bash
-# From the project root
-supabase gen types typescript --local > types/supabase.ts
-```
-
-## Database Schema
-
-The database now includes comprehensive tables for a full LMS integration:
-
-### Core Tables
-
-#### Users Table
-
-- `id` (UUID, Primary Key)
-- `full_name` (Text, Required)
-- `email` (Text, Unique, Required)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-#### Courses Table
-
-- `id` (UUID, Primary Key)
-- `lms_id` (Text, Optional) - LMS identifier for integration
-- `lms_provider` (Text, Default: 'canvas') - LMS provider name
-- `name` (Text, Required)
-- `code` (Text, Optional) - Course code (e.g., "CS 101")
-- `instructor` (Text, Required)
-- `description` (Text, Optional)
-- `semester` (Text, Optional)
-- `year` (Text, Optional)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-#### Enrollments Table
-
-- `id` (UUID, Primary Key)
-- `user_id` (UUID, Foreign Key → users.id)
-- `course_id` (UUID, Foreign Key → courses.id)
-- `enrolled_at` (Timestamp)
-- `status` (Text: 'active', 'completed', 'dropped')
-
-### Course Content Tables
-
-#### Modules Table
-
-- `id` (UUID, Primary Key)
-- `lms_id` (Text, Optional) - LMS module identifier
-- `course_id` (UUID, Foreign Key → courses.id)
-- `name` (Text, Required)
-- `description` (Text, Optional)
-- `items_count` (Integer, Auto-maintained)
-- `position` (Integer, Default: 0)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-#### Module Items Table
-
-- `id` (UUID, Primary Key)
-- `lms_id` (Text, Optional) - LMS item identifier
-- `lms_content_id` (Text, Optional) - LMS content identifier
-- `name` (Text, Required)
-- `module_id` (UUID, Foreign Key → modules.id)
-- `course_id` (UUID, Foreign Key → courses.id)
-- `type` (Text, Enum: 'file', 'page', 'discussion', 'assignment', 'quiz', 'external_url', 'external_tool')
-- `url` (Text, Optional)
-- `position` (Integer, Default: 0)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-### Study Tools Tables
-
-#### Flashcard Decks Table
-
-- `id` (UUID, Primary Key)
-- `course_id` (UUID, Foreign Key → courses.id)
-- `name` (Text, Required)
-- `description` (Text, Optional)
-- `items_count` (Integer, Auto-maintained)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-#### Flashcard Items Table
-
-- `id` (UUID, Primary Key)
-- `deck_id` (UUID, Foreign Key → flashcard_decks.id)
-- `question` (Text, Required)
-- `answer` (Text, Required)
-- `position` (Integer, Default: 0)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-#### Quizzes Table
-
-- `id` (UUID, Primary Key)
-- `course_id` (UUID, Foreign Key → courses.id)
-- `name` (Text, Required)
-- `description` (Text, Optional)
-- `items_count` (Integer, Auto-maintained)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-#### Quiz Questions Table
-
-- `id` (UUID, Primary Key)
-- `quiz_id` (UUID, Foreign Key → quizzes.id)
-- `question` (Text, Required)
-- `options` (JSONB, Array of options)
-- `correct_option` (Integer, Required)
-- `explanation` (Text, Optional)
-- `position` (Integer, Default: 0)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-#### Quiz Attempts Table
-
-- `id` (UUID, Primary Key)
-- `quiz_id` (UUID, Foreign Key → quizzes.id)
-- `user_id` (UUID, Foreign Key → users.id)
-- `score` (Integer, Default: 0)
-- `total_questions` (Integer, Default: 0)
-- `completed_at` (Timestamp)
-- `answers` (JSONB, User's answers)
-
-### File Management Table
-
-#### Files Table
-
-- `id` (UUID, Primary Key)
-- `canvas_id` (Text, Optional) - Canvas file identifier
-- `name` (Text, Required)
-- `size` (BigInt, Default: 0)
-- `type` (Text, Optional) - MIME type
-- `url` (Text, Optional)
-- `course_id` (UUID, Optional, Foreign Key → courses.id)
-- `module_item_id` (UUID, Optional, Foreign Key → module_items.id)
-- `created_at` (Timestamp)
-- `updated_at` (Timestamp)
-
-### Junction Tables
-
-- `flashcard_deck_modules` - Links flashcard decks to modules (many-to-many)
-- `quiz_modules` - Links quizzes to modules (many-to-many)
-
-## Row Level Security (RLS)
-
-All tables have RLS enabled with the following policies:
-
-### Core Tables
-
-- **Users**: Can only view/update their own profile
-- **Courses**: Public read access for all users
-- **Enrollments**: Users can only view/manage their own enrollments
-
-### Course Content Tables
-
-- **Modules**: Users can view modules for courses they're enrolled in
-- **Module Items**: Users can view module items for courses they're enrolled in
-- **Files**: Users can view files for courses they're enrolled in
-
-### Study Tools Tables
-
-- **Flashcard Decks**: Users can view/create/manage flashcard decks for enrolled courses
-- **Flashcard Items**: Users can manage flashcard items for decks in enrolled courses
-- **Quizzes**: Users can view quizzes for courses they're enrolled in
-- **Quiz Questions**: Users can view quiz questions for enrolled courses
-- **Quiz Attempts**: Users can only view/create their own quiz attempts
-
-### Advanced Features
-
-- **Auto-maintained counts**: Module, flashcard deck, and quiz item counts are automatically updated via triggers
-- **Position ordering**: Items within modules, flashcard decks, and quizzes maintain position for proper ordering
-- **LMS Integration**: Support for Canvas and other LMS providers with identifier mapping
-
-## Team Collaboration & Database Management
-
-### **Making Schema Changes**
-
-When you need to modify the database schema:
-
-```bash
-# 1. Create a new migration (describe your change)
-supabase migration new add_user_preferences_table
-
-# 2. Edit the generated migration file in supabase/migrations/
-# Add your SQL changes
-
-# 3. Apply locally first (test your changes)
-supabase db reset
-
-# 4. If everything works, push to shared cloud database
-supabase db push
-
-# 5. Commit and push your migration file
-git add supabase/migrations/
-git commit -m "feat: add user preferences table"
-git push
-```
-
-### **Staying in Sync with Team Changes**
+## Staying in Sync with Team Changes
 
 When team members make database changes:
 
@@ -350,19 +110,6 @@ supabase gen types typescript --local > types/supabase.ts
 npm run dev
 ```
 
-### **Working with Shared Cloud Data**
-
-```bash
-# Switch to cloud database for testing
-# Update .env.local to use cloud URLs
-
-# Pull fresh data from cloud (⚠️ destroys local data)
-supabase db pull --linked
-
-# Push local changes to cloud (⚠️ careful!)
-supabase db push
-```
-
 ## Common Commands
 
 ```bash
@@ -373,7 +120,6 @@ supabase status             # Check service status
 supabase db reset           # Reset local database (applies all migrations)
 
 # Schema Management
-supabase migration new <name>           # Create new migration
 supabase db push                        # Push migrations to cloud
 supabase db pull                        # Pull schema from cloud
 
@@ -383,94 +129,16 @@ supabase gen types typescript --project-ref kcduzlbadhzeulhzslvj > types/supabas
 
 # Project Management
 supabase projects list                  # List your projects
-supabase link --project-ref <ref>       # Link to cloud project
+supabase link --project-ref kcduzlbadhzeulhzslvj       # Link to cloud project
 ```
 
-## Production Setup
+## Troubleshooting Common Issues
 
-1. Create a Supabase project at [supabase.com](https://supabase.com)
-2. Update your `.env.local` with production values:
-   ```env
-   SUPABASE_URL=https://your-project-id.supabase.co
-   SUPABASE_ANON_KEY=your-production-anon-key
-   ```
-3. Apply migrations to production:
-   ```bash
-   supabase db push
-   ```
+### **🐳 Docker Issues**
 
-## Usage in Code
-
-Import and use the Supabase client:
-
-```typescript
-import {
-  supabase,
-  type User,
-  type Course,
-  type Module,
-  type FlashcardDeck,
-  type Quiz,
-  type CourseWithModules,
-} from "./supabase/client";
-
-// Example: Fetch all courses
-const { data: courses, error } = await supabase.from("courses").select("*");
-
-// Example: Fetch course with modules and items
-const { data: courseWithModules, error } = await supabase
-  .from("courses")
-  .select(
-    `
-    *,
-    modules (
-      *,
-      module_items (*)
-    )
-  `
-  )
-  .eq("id", courseId)
-  .single();
-
-// Example: Create a new enrollment
-const { data, error } = await supabase.from("enrollments").insert({
-  user_id: userId,
-  course_id: courseId,
-  status: "active",
-});
-
-// Example: Create a flashcard deck
-const { data: deck, error } = await supabase.from("flashcard_decks").insert({
-  course_id: courseId,
-  name: "Chapter 1 Vocabulary",
-  description: "Key terms from the first chapter",
-});
-
-// Example: Fetch quiz with questions and user attempts
-const { data: quizData, error } = await supabase
-  .from("quizzes")
-  .select(
-    `
-    *,
-    quiz_questions (*),
-    quiz_attempts!inner (
-      score,
-      completed_at
-    )
-  `
-  )
-  .eq("id", quizId)
-  .eq("quiz_attempts.user_id", userId);
-```
-
-## Troubleshooting
-
-### **Common Setup Issues**
-
-**🐳 Docker Issues**
+**Problem**: "Cannot connect to Docker daemon"
 
 ```bash
-# Problem: "Cannot connect to Docker daemon"
 # Solution: Start Docker Desktop first
 open -a Docker
 
@@ -478,10 +146,9 @@ open -a Docker
 supabase start
 ```
 
-**🔌 Port Conflicts**
+**Problem**: "Port already in use"
 
 ```bash
-# Problem: "Port already in use"
 # Solution: Stop conflicting services
 supabase stop
 docker ps  # Check for running containers
@@ -490,20 +157,30 @@ docker ps  # Check for running containers
 # Or modify ports in supabase/config.toml
 ```
 
-**🔗 Project Linking Issues**
+### **🔗 Project Linking Issues**
+
+**Problem**: "Cannot find project ref"
 
 ```bash
-# Problem: "Cannot find project ref"
 # Solution: Login and link again
 supabase login
 supabase projects list
 supabase link --project-ref kcduzlbadhzeulhzslvj
 ```
 
-**📄 Migration Errors**
+**Problem**: "project is paused"
 
 ```bash
-# Problem: Migration fails to apply
+# Solution: Go to Supabase dashboard and unpause the project
+# https://supabase.com/dashboard/project/kcduzlbadhzeulhzslvj
+# Click "Resume" or "Unpause" button
+```
+
+### **📄 Migration Errors**
+
+**Problem**: Migration fails to apply
+
+```bash
 # Solution: Check SQL syntax and dependencies
 supabase db reset  # Reapply all migrations
 
@@ -511,10 +188,18 @@ supabase db reset  # Reapply all migrations
 # supabase/migrations/XXXXX_migration_name.sql
 ```
 
-**🏷️ TypeScript Type Errors**
+**Problem**: "schema_migrations already exists"
 
 ```bash
-# Problem: Import errors or type mismatches
+# This is normal - just continue with the migration process
+# The error indicates the migration system is already set up
+```
+
+### **🏷️ TypeScript Type Errors**
+
+**Problem**: Import errors or type mismatches
+
+```bash
 # Solution: Regenerate types after schema changes
 supabase gen types typescript --local > types/supabase.ts
 
@@ -522,29 +207,86 @@ supabase gen types typescript --local > types/supabase.ts
 supabase gen types typescript --project-ref kcduzlbadhzeulhzslvj > types/supabase.ts
 ```
 
-**🌐 Environment Variable Issues**
+**Problem**: "Missing SUPABASE_URL environment variable"
 
 ```bash
-# Problem: "Missing SUPABASE_URL environment variable"
 # Solution: Copy and configure environment file
 cp .env.local.example .env.local
 # Edit .env.local with correct values
 ```
 
-**🔄 Team Sync Issues**
+### **🔄 Team Sync Issues**
+
+**Problem**: "My database doesn't match teammate's"
 
 ```bash
-# Problem: "My database doesn't match teammate's"
 # Solution: Reset local database to latest migrations
 git pull                    # Get latest migrations
 supabase db reset          # Apply all migrations
 supabase gen types typescript --local > types/supabase.ts
 ```
 
-### **Getting Help**
+**Problem**: "Untracked supabase.ts file"
+
+```bash
+# Solution: Add and commit the file
+git add frontend/src/lib/supabase.ts
+git commit -m "chore: add supabase client and types for frontend"
+git push
+```
+
+### **🌐 Connection Issues**
+
+**Problem**: "Failed to connect to postgres"
+
+```bash
+# Solution: Check if local Supabase is running
+supabase status
+
+# If not running, start it:
+supabase start
+
+# If still having issues, restart everything:
+supabase stop
+supabase start
+```
+
+**Problem**: "Tenant or user not found"
+
+```bash
+# Solution: This usually means the project is paused or you're not linked correctly
+# 1. Check if project is paused in dashboard
+# 2. Re-link to the project:
+supabase link --project-ref kcduzlbadhzeulhzslvj
+```
+
+### **🔄 Database Reset Issues**
+
+**Problem**: "Cannot reset database"
+
+```bash
+# Solution: Stop and restart Supabase completely
+supabase stop
+supabase start
+supabase db reset
+```
+
+## Getting Help
 
 1. **Check Supabase Status**: `supabase status`
 2. **View Logs**: Check terminal output for error messages
 3. **Reset Everything**: `supabase stop && supabase start`
 4. **Team Chat**: Ask teammates if they've seen similar issues
 5. **Supabase Docs**: https://supabase.com/docs
+
+## Quick Reference
+
+| Command                                                     | Purpose                                       |
+| ----------------------------------------------------------- | --------------------------------------------- |
+| `supabase start`                                            | Start local database                          |
+| `supabase stop`                                             | Stop local database                           |
+| `supabase status`                                           | Check if services are running                 |
+| `supabase db reset`                                         | Reset local database and apply all migrations |
+| `supabase db pull`                                          | Pull latest schema from cloud                 |
+| `supabase gen types typescript --local > types/supabase.ts` | Generate TypeScript types from local DB       |
+| `supabase link --project-ref kcduzlbadhzeulhzslvj`          | Link to shared team project                   |

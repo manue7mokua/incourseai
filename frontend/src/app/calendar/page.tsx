@@ -17,8 +17,9 @@ import { CalendarWeek } from "@/components/calendar-week";
 import { CalendarDay } from "@/components/calendar-day";
 import { CalendarEvent } from "@/components/calendar-event";
 import { CalendarSidebar } from "@/components/calendar-sidebar";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
-export default function CalendarPage() {
+const CalendarPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"month" | "week" | "day">("month");
   const [showSidebar, setShowSidebar] = useState(true);
@@ -352,5 +353,13 @@ export default function CalendarPage() {
         </div>
       </main>
     </div>
+  );
+};
+
+export default function WrappedCalendarPage() {
+  return (
+    <ProtectedRoute>
+      <CalendarPage />
+    </ProtectedRoute>
   );
 }

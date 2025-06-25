@@ -18,32 +18,130 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { FcGoogle } from "react-icons/fc";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleEmailSignUp = (e: React.FormEvent) => {
+  // State for email/password sign up
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
+
+  const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally handle the sign-up logic
-    // For now, we'll just redirect to onboarding
-    router.push("/onboarding");
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      });
+
+      if (error) {
+        setError(error.message);
+      } else if (data.user) {
+        // Since email confirmation is enabled, Supabase sends a confirmation link.
+        // The user is technically signed up but needs to confirm.
+        // We can proceed to onboarding.
+        router.push("/onboarding");
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleMagicLink = (e: React.FormEvent) => {
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally send the magic link
-    setMagicLinkSent(true);
-    // After a short delay, redirect to onboarding (simulating magic link click)
-    setTimeout(() => {
-      router.push("/onboarding");
-    }, 3000);
+
+    if (!magicLinkSent) {
+      setLoading(true);
+      setError(null);
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+          },
+        });
+
+        if (error) {
+          setError(error.message);
+        } else {
+          setMagicLinkSent(true);
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(true);
+      setError(null);
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.verifyOtp({
+          email,
+          token,
+          type: "email",
+        });
+
+        if (error) {
+          setError(error.message);
+        } else if (session) {
+          router.push("/dashboard");
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
-  const handleSocialSignUp = () => {
-    // Here you would normally handle social authentication
-    // For now, we'll just redirect to onboarding
-    router.push("/onboarding");
+  const handleGoogleSignUp = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) setError(error.message);
+    } catch (e) {
+      if (e instanceof Error) setError(e.message);
+      else setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Static sample data for dashboard preview
@@ -268,7 +366,26 @@ export default function SignUpPage() {
                 Sign up to get started with InCourse
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm"
+                >
+                  {error}
+                </motion.div>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full flex items-center gap-2"
+                onClick={handleGoogleSignUp}
+                disabled={loading}
+              >
+                <FcGoogle className="h-5 w-5" />
+                {loading ? "Signing up..." : "Sign up with Google"}
+              </Button>
               <Tabs defaultValue="email" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="email">Email</TabsTrigger>
@@ -284,6 +401,9 @@ export default function SignUpPage() {
                           type="text"
                           placeholder="John Doe"
                           required
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          disabled={loading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -293,6 +413,9 @@ export default function SignUpPage() {
                           type="email"
                           placeholder="firstname.lastname@college.edu"
                           required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          disabled={loading}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -302,10 +425,17 @@ export default function SignUpPage() {
                           type="password"
                           placeholder="Create a strong password"
                           required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          disabled={loading}
                         />
                       </div>
-                      <Button type="submit" className="w-full">
-                        Sign Up
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={loading}
+                      >
+                        {loading ? "Signing Up..." : "Sign Up"}
                       </Button>
                     </div>
                   </form>
@@ -313,6 +443,25 @@ export default function SignUpPage() {
                 <TabsContent value="magic">
                   <form onSubmit={handleMagicLink}>
                     <div className="grid gap-4">
+                      {error && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm"
+                        >
+                          {error}
+                        </motion.div>
+                      )}
+                      {magicLinkSent && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-green-50 text-green-700 p-3 rounded-lg border border-green-200 text-sm"
+                        >
+                          Check your email for the magic link or enter the
+                          6-digit code below.
+                        </motion.div>
+                      )}
                       <div className="grid gap-2">
                         <Label htmlFor="magic-email">School Email</Label>
                         <Input
@@ -320,83 +469,44 @@ export default function SignUpPage() {
                           type="email"
                           placeholder="firstname.lastname@college.edu"
                           required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          disabled={loading || magicLinkSent}
                         />
                       </div>
+                      {magicLinkSent && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="grid gap-2 overflow-hidden"
+                        >
+                          <Label htmlFor="magic-otp">One-Time Code</Label>
+                          <Input
+                            id="magic-otp"
+                            type="text"
+                            placeholder="123456"
+                            required
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                            disabled={loading}
+                          />
+                        </motion.div>
+                      )}
                       <Button
                         type="submit"
                         className="w-full"
-                        disabled={magicLinkSent}
+                        disabled={loading}
                       >
-                        {magicLinkSent ? "Magic Link Sent!" : "Send Magic Link"}
+                        {loading
+                          ? "..."
+                          : magicLinkSent
+                          ? "Sign Up with Code"
+                          : "Send Magic Link"}
                       </Button>
-                      {magicLinkSent && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-sm text-center text-muted-foreground bg-green-50 p-3 rounded-lg border border-green-200"
-                        >
-                          ✨ Check your inbox for the magic link. You&apos;ll be
-                          redirected to onboarding shortly.
-                        </motion.div>
-                      )}
                     </div>
                   </form>
                 </TabsContent>
               </Tabs>
-
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => handleSocialSignUp()}
-                  type="button"
-                >
-                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                    <path
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      fill="#4285F4"
-                    />
-                    <path
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      fill="#34A853"
-                    />
-                    <path
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      fill="#FBBC05"
-                    />
-                    <path
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      fill="#EA4335"
-                    />
-                  </svg>
-                  Google
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => handleSocialSignUp()}
-                  type="button"
-                >
-                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                    <path
-                      d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z"
-                      fill="#F25022"
-                    />
-                  </svg>
-                  Microsoft
-                </Button>
-              </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
               <div className="text-sm text-center text-muted-foreground">

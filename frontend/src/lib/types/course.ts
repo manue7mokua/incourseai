@@ -18,61 +18,65 @@ export interface Module {
   description: string | null;
   itemsCount: number;
   moduleItems: ModuleItem[];
+  prerequisites: string[] | null;
 }
 
 export interface ModuleItem {
-    id: string | null;
-    lmsId: string | null;
-    lmsContentId: string | null;
-    name: string;
-    moduleId: string;
-    courseId: string;
-    type: string;
-    url: string | null;
+  id: string | null;
+  lmsId: string | null;
+  lmsContentId: string | null;
+  name: string;
+  moduleId: string;
+  courseId: string;
+  type: string;
+  url: string | null;
+  position: number | null;
 }
 
 export interface FlashcardDeck {
-    id: string | null;
-    courseId: string;
-    moduleIds: string[];
-    name: string;
-    description: string | null;
-    itemsCount: number;
-    flashcardItems: FlashcardItem[];
+  id: string | null;
+  courseId: string;
+  moduleIds: string[];
+  name: string;
+  description: string | null;
+  itemsCount: number;
+  flashcardItems: FlashcardItem[];
 }
 
 export interface FlashcardItem {
-    id: string | null;
-    question: string;
-    answer: string;
+  id: string | null;
+  question: string;
+  answer: string;
 }
 
 export interface Quiz {
-    id: string | null;
-    courseId: string;
-    moduleIds: string[];
-    name: string;
-    description: string | null;
-    itemsCount: number;
-    previousAttempts: number;
-    previousScore: number;
-    quizItems: Question[];
+  id: string | null;
+  courseId: string;
+  moduleIds: string[];
+  name: string;
+  description: string | null;
+  itemsCount: number;
+  previousAttempts: number;
+  previousScore: number;
+  quizItems: Question[];
 }
 
 export interface Question {
-    id: string | null;
-    question: string;
-    options: string[];
-    correctOption: number;
-    explanation: string | null;
+  id: string | null;
+  question: string;
+  options: string[];
+  correctOption: number;
+  explanation: string | null;
 }
 
-
 export interface FileDetails {
-    id: string | null;
-    canvasId: string | null;
-    name: string;
-    size: number;
-    type: string;
-    url: string;
+  id: string | null;
+  canvasId: string | null;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+  isValidForProcessing?: boolean;
+  validationError?: string | null;
+  fileTypeName?: string | null;
 }
