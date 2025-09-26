@@ -5,11 +5,13 @@ This document explains how to set up and run the InCourse development environmen
 ## 🚀 Quick Start
 
 ### Start All Services
+
 ```bash
 ./start-dev.sh
 ```
 
 This single command will:
+
 - Start Docker Desktop (if not running)
 - Start Supabase local development environment
 - Start the FastAPI backend on port 8000
@@ -18,6 +20,7 @@ This single command will:
 - Display all service URLs
 
 ### Stop All Services
+
 ```bash
 ./stop-dev.sh
 ```
@@ -47,6 +50,7 @@ The development environment consists of:
 If the automated script doesn't work, you can start services manually:
 
 ### 1. Start Supabase
+
 ```bash
 cd supabase
 supabase start
@@ -54,6 +58,7 @@ cd ..
 ```
 
 ### 2. Start Backend
+
 ```bash
 cd backend
 python3 -m venv venv
@@ -63,6 +68,7 @@ python3 main.py
 ```
 
 ### 3. Start Frontend
+
 ```bash
 cd frontend
 npm install
@@ -82,7 +88,9 @@ Once all services are running:
 ## 🔑 Environment Configuration
 
 ### Backend Environment
+
 Create `backend/.env` with:
+
 ```env
 CANVAS_API_BASE_URL=https://howard.instructure.com/api/v1
 CANVAS_API_KEY=your_canvas_api_key_here
@@ -92,7 +100,9 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ### Frontend Environment
+
 Create `frontend/.env.local` with:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
@@ -102,26 +112,34 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## 🐛 Troubleshooting
 
 ### Port Already in Use
+
 If you get "Address already in use" errors:
+
 ```bash
 ./stop-dev.sh
 ./start-dev.sh
 ```
 
 ### Docker Issues
+
 If Docker fails to start:
+
 1. Open Docker Desktop manually
 2. Wait for it to fully start
 3. Run `./start-dev.sh` again
 
 ### Canvas Integration Issues
+
 If Canvas integration fails:
+
 1. Check your Canvas API key in `backend/.env`
 2. Verify the Canvas URL is correct
 3. Test the connection: `curl -X POST http://localhost:8000/api/lms/test-connection`
 
 ### Database Issues
+
 If Supabase fails to start:
+
 ```bash
 cd supabase
 supabase stop
@@ -138,6 +156,7 @@ supabase start
 ## 🆘 Getting Help
 
 If you encounter issues:
+
 1. Check the terminal output for error messages
 2. Verify all prerequisites are installed
 3. Ensure ports 3000, 8000, and 54321 are available
